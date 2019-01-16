@@ -1,0 +1,72 @@
+= Monitor Knative deployments with the Elastic Stack
+:imagesdir: ./images
+
+== Prerequisite
+
+For now, those tutorials have only been tested on a laptop with Docker Desktop 2.0.0 on Mac OS.
+
+image::docker-desktop-mac.png[width=50%]
+
+
+== Knative Pipeline Tutorials
+
+The `pipeline-elastic` folder contains several examples using *Knative Tasks and Pipelines*. +
+The Elastic components (Elasticsearch, Beats and Kibana) are deployed to the Kubernetes cluster to collect the logs and metrics
+from the pods deployed by Knative. +
+The Knative components deployed are the official ones. There is no need to update those components to monitor them using the Elastic Stack.
+
+* `pipeline-elastic/01-hello-world` contains a *Task* and a *TasRun* to print Hello World
+* `pipeline-elastic/02-gradle-build` contains a *Resource (git)*, a *Task* and a *TasRun* to build a Gradle project
+* `pipeline-elastic/03-docker-build` contains a *Pipeline* to build and push a Docker image from a git repository
+
+=== Set up
+
+[source,shell]
+--
+# make sure you are using the right k8s context
+$ kubectl config current-context
+docker-for-desktop
+
+# install all the components
+$ ./pipeline-elastic/scripts/set-up-env.sh
+--
+
+Then wait until the pods are running before starting the tutorials
+
+[source,shell]
+--
+# Check Elastic pods
+$ kubectl get pods -w -n default
+
+# Check Knative Build Pipeline pods
+$ kubectl get pods -w -n knative-build-pipeline
+--
+
+=== Get Access to Kibana
+
+When the set-up is done, you should have a *Kibana pod up and running*:
+
+[source,shell]
+--
+# Check Elastic pods
+$ kubectl get pods -n default
+NAME                                 READY     STATUS    RESTARTS   AGE
+elasticsearch-7bf6cd96cd-r6llt       1/1       Running   0          4m
+filebeat-5lrwg                       1/1       Running   0          4m
+kibana-694998774-dxwgm               1/1       Running   0          4m
+kube-state-metrics-b8845b4d7-ch9v7   1/1       Running   0          4m
+metricbeat-zctb6                     1/1       Running   0          4m
+--
+
+Then you can access to the http://localhost:30601/app/infra#/home?_g=()&waffleOptions=(groupBy:!(),metric:(type:cpu),nodeType:pod)[Kibana Infrastructure app]:
+
+image::kibana-infrastructure-app.png[width=90%]
+
+
+Check the Knative Pipeline Controller logs to make sure everyhting is OK
+
+image::kibana-k8s-logs.gif[width=90%]
+
+=== Ready to start!
+
+*CONGRATS* you are now ready to start the tutorials!
