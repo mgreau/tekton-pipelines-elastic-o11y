@@ -1,0 +1,60 @@
+= Knative Pipeline Tutorials
+:imagesdir: ../images
+
+== Prerequisite
+
+Make sure you have your environment set-up like explained in the link:../README.adoc[README.adoc]
+
+
+== Hello World
+
+There are 2 files `01-task.yaml` and `02-task-run.yaml`
+
+.01-task.yaml
+[source,yaml]
+--
+apiVersion: pipeline.knative.dev/v1alpha1
+kind: Task
+metadata:
+  name: echo-hello-world
+  namespace: tutorials
+spec:
+  steps:
+  - name: echo
+    image: busybox
+    command:
+      - echo
+    args:
+      - "Hello World from Knative / Elastic tutorials!"
+--
+
+.02-task-run.yaml
+[source,yaml]
+--
+apiVersion: pipeline.knative.dev/v1alpha1
+kind: TaskRun
+metadata:
+  name: echo-hello-world-task-run
+  namespace: tutorials
+spec:
+  taskRef:
+    name: echo-hello-world
+  trigger:
+    type: manual
+--
+
+[source,shell]
+--
+# Check Elastic pods
+$ kubectl apply -f samples/01-hello-world/
+task.pipeline.knative.dev "echo-hello-world" created
+taskrun.pipeline.knative.dev "echo-hello-world-task-run" created
+
+$ kubectl get pods -n tutorials
+NAME                                   READY     STATUS      RESTARTS   AGE
+echo-hello-world-task-run-pod-f4ee3b   0/1       Completed   0          35s
+--
+
+Access to the http://localhost:30601/app/infra#/logs?logFilter=(expression:'kubernetes.labels.build.knative.dev%2FbuildName:%20%22echo-hello-world-task-run%22',kind:kuery)&logPosition=(position:(tiebreaker:3620,time:1547642338000),streamLive:!t)&_g=()[Pod Logs] in Kibana
+
+image::kibana-pod-logs.png[width=90%]

@@ -1,0 +1,13 @@
+apiVersion: pipeline.knative.dev/v1alpha1
+kind: Task
+metadata:
+  name: echo-hello-world
+  namespace: tutorials
+spec:
+  steps:
+  - name: echo
+    image: busybox
+    command:
+      - echo
+    args:
+      - "Hello World from Knative / Elastic tutorials!"

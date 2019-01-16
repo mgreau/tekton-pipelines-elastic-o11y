@@ -16,8 +16,8 @@ from the pods deployed by Knative. +
 The Knative components deployed are the official ones. There is no need to update those components to monitor them using the Elastic Stack.
 
 * `pipeline-elastic/01-hello-world` contains a *Task* and a *TasRun* to print Hello World
-* `pipeline-elastic/02-gradle-build` contains a *Resource (git)*, a *Task* and a *TasRun* to build a Gradle project
-* `pipeline-elastic/03-docker-build` contains a *Pipeline* to build and push a Docker image from a git repository
+* [TODO] `pipeline-elastic/02-gradle-build` contains a *Resource (git)*, a *Task* and a *TasRun* to build a Gradle project
+* [TODO] `pipeline-elastic/03-docker-build` contains a *Pipeline* to build and push a Docker image from a git repository
 
 === Set up
 
@@ -69,4 +69,4 @@ image::kibana-k8s-logs.gif[width=90%]
 
 === Ready to start!
 
-*CONGRATS* you are now ready to start the tutorials!
+*CONGRATS* you are now ready to start the link:./pipeline-elastic/README.adoc[tutorials]!
