@@ -45,7 +45,7 @@ spec:
 
 [source,shell]
 --
-# Check Elastic pods
+# Generate hello world Task and TaskRun
 $ kubectl apply -f samples/01-hello-world/
 task.pipeline.knative.dev "echo-hello-world" created
 taskrun.pipeline.knative.dev "echo-hello-world-task-run" created
