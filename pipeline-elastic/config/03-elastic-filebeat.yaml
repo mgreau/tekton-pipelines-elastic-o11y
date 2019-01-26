@@ -10,13 +10,16 @@ data:
     filebeat.autodiscover:
       providers:
         - type: kubernetes
+          host: ${NODE_NAME}
           hints.enabled: true
 
     processors:
       - add_cloud_metadata:
 
     output.elasticsearch:
-      hosts: ['elasticsearch:9200']
+      hosts: ['${ELASTICSEARCH_HOST:elasticsearch}:${ELASTICSEARCH_PORT:9200}']
+      username: ${ELASTICSEARCH_USERNAME}
+      password: ${ELASTICSEARCH_PASSWORD}
 
     setup.kibana:
       host: kibana
@@ -53,6 +56,19 @@ spec:
           "-e",
           "--setup",
         ]
+        env:
+        - name: ELASTICSEARCH_HOST
+          value: elasticsearch
+        - name: ELASTICSEARCH_PORT
+          value: "9200"
+        - name: ELASTICSEARCH_USERNAME
+          value: elastic
+        - name: ELASTICSEARCH_PASSWORD
+          value: changeme
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
         securityContext:
           runAsUser: 0
         resources:
