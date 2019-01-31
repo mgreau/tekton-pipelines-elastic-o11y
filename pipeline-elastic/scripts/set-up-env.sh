@@ -6,7 +6,7 @@ set -e
 readonly GIT_TOPLEVEL=$(git rev-parse --show-toplevel 2> /dev/null)
 
 # Donwload the Elastic Docker images used in the cluster
-TAG=6.5.4
+TAG=6.6.0
 docker pull docker.elastic.co/elasticsearch/elasticsearch:${TAG}
 docker pull docker.elastic.co/kibana/kibana:${TAG}
 docker pull docker.elastic.co/beats/filebeat:${TAG}

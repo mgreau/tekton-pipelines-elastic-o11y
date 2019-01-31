@@ -319,18 +319,18 @@ spec:
         - -stderrthreshold
         - INFO
         - -kubeconfig-writer-image
-        - gcr.io/knative-nightly/github.com/knative/build-pipeline/cmd/kubeconfigwriter@sha256:5ee1976fc222723244279368306750288bb0cdb316be970a1c06bc4ea92dc864
+        - gcr.io/knative-nightly/github.com/knative/build-pipeline/cmd/kubeconfigwriter:v20190131-9425e011
         - -creds-image
-        - gcr.io/knative-nightly/github.com/knative/build-pipeline/cmd/creds-init@sha256:b26a993ff862d2a96b22839affe380b027303703b3898b4966f88905f1b5cfed
+        - gcr.io/knative-nightly/github.com/knative/build-pipeline/cmd/creds-init:v20190131-9425e011
         - -git-image
-        - gcr.io/knative-nightly/github.com/knative/build-pipeline/cmd/git-init@sha256:be664c63c21620b39d6e968791a4ea59d60ba61e0017ffc7936122cb412a1822
+        - gcr.io/knative-nightly/github.com/knative/build-pipeline/cmd/git-init:v20190131-9425e011
         - -nop-image
-        - gcr.io/knative-nightly/github.com/knative/build-pipeline/cmd/nop@sha256:921ed5e086611197ccd25887458acddb9b35ca893361387c8b892f7ccdda8b7a
+        - gcr.io/knative-nightly/github.com/knative/build-pipeline/cmd/nop:v20190131-9425e011
         - -bash-noop-image
-        - gcr.io/knative-nightly/github.com/knative/build-pipeline/cmd/bash@sha256:7d968d4454e5808e81327b0a83f0ebf96776e28917fd2dfaad756e963bafd780
+        - gcr.io/knative-nightly/github.com/knative/build-pipeline/cmd/bash:v20190131-9425e011
         - -gsutil-image
-        - gcr.io/knative-nightly/github.com/knative/build-pipeline/cmd/gsutil@sha256:5374b366a70ee49a8c20aef86bb0ed3b507b627f82fc363f672a19565e8bb08b
-        image: gcr.io/knative-nightly/github.com/knative/build-pipeline/cmd/controller@sha256:3bef9ffa07ce8954d56e716f8f79cf2e0e0c4de27d87527c4c849aef2c40a076
+        - gcr.io/knative-nightly/github.com/knative/build-pipeline/cmd/gsutil:v20190131-9425e011
+        image: gcr.io/knative-nightly/github.com/knative/build-pipeline/cmd/controller:v20190131-9425e011
         name: build-pipeline-controller
         volumeMounts:
         - mountPath: /etc/config-logging
@@ -354,7 +354,7 @@ spec:
         app: build-pipeline-webhook
     spec:
       containers:
-      - image: gcr.io/knative-nightly/github.com/knative/build-pipeline/cmd/webhook@sha256:a0895576995bc46e4d1b37e3ddff04cb2e5b4c98c3912760f2c78703d4fcbf63
+      - image: gcr.io/knative-nightly/github.com/knative/build-pipeline/cmd/webhook:v20190131-9425e011
         name: webhook
         volumeMounts:
         - mountPath: /etc/config-logging
