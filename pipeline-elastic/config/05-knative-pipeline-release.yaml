@@ -1,8 +1,8 @@
----
 apiVersion: v1
 kind: Namespace
 metadata:
   name: knative-build-pipeline
+
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -94,12 +94,14 @@ rules:
   - delete
   - patch
   - watch
+
 ---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: build-pipeline-controller
   namespace: knative-build-pipeline
+
 ---
 apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: ClusterRoleBinding
@@ -113,6 +115,7 @@ subjects:
 - kind: ServiceAccount
   name: build-pipeline-controller
   namespace: knative-build-pipeline
+
 ---
 apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
@@ -129,6 +132,7 @@ spec:
     plural: clustertasks
   scope: Cluster
   version: v1alpha1
+
 ---
 apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
@@ -148,6 +152,7 @@ spec:
     singular: image
   scope: Namespaced
   version: v1alpha1
+
 ---
 apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
@@ -164,6 +169,7 @@ spec:
     plural: pipelines
   scope: Namespaced
   version: v1alpha1
+
 ---
 apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
@@ -180,6 +186,7 @@ spec:
     plural: pipelineruns
   scope: Namespaced
   version: v1alpha1
+
 ---
 apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
@@ -196,6 +203,7 @@ spec:
     plural: pipelineresources
   scope: Namespaced
   version: v1alpha1
+
 ---
 apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
@@ -212,6 +220,7 @@ spec:
     plural: tasks
   scope: Namespaced
   version: v1alpha1
+
 ---
 apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
@@ -228,6 +237,7 @@ spec:
     plural: taskruns
   scope: Namespaced
   version: v1alpha1
+
 ---
 apiVersion: v1
 kind: Service
@@ -244,6 +254,7 @@ spec:
     targetPort: 9090
   selector:
     app: build-pipeline-controller
+
 ---
 apiVersion: v1
 kind: Service
@@ -258,6 +269,15 @@ spec:
     targetPort: 443
   selector:
     app: build-pipeline-webhook
+
+---
+apiVersion: v1
+data: null
+kind: ConfigMap
+metadata:
+  name: config-artifact-bucket
+  namespace: knative-build-pipeline
+
 ---
 apiVersion: v1
 data:
@@ -266,6 +286,7 @@ kind: ConfigMap
 metadata:
   name: config-entrypoint
   namespace: knative-build-pipeline
+
 ---
 apiVersion: v1
 data:
@@ -300,6 +321,7 @@ kind: ConfigMap
 metadata:
   name: config-logging
   namespace: knative-build-pipeline
+
 ---
 apiVersion: apps/v1beta1
 kind: Deployment
@@ -319,18 +341,18 @@ spec:
         - -stderrthreshold
         - INFO
         - -kubeconfig-writer-image
-        - gcr.io/knative-nightly/github.com/knative/build-pipeline/cmd/kubeconfigwriter:v20190131-9425e011
+        - gcr.io/knative-nightly/github.com/knative/build-pipeline/cmd/kubeconfigwriter@sha256:9e0171c9a7748a6e41ad26baa2f00b6d5da6824aa0b5792c650a77ce943e5d6c
         - -creds-image
-        - gcr.io/knative-nightly/github.com/knative/build-pipeline/cmd/creds-init:v20190131-9425e011
+        - gcr.io/knative-nightly/github.com/knative/build-pipeline/cmd/creds-init@sha256:a2fab58237f8c3ba701371c96cc9ca28a3f21761db4d2c7afac52a42c5472544
         - -git-image
-        - gcr.io/knative-nightly/github.com/knative/build-pipeline/cmd/git-init:v20190131-9425e011
+        - gcr.io/knative-nightly/github.com/knative/build-pipeline/cmd/git-init@sha256:268f3b0422aa9dd25475f8d578e209f92c13ca73a06dd137cc3143710449778a
         - -nop-image
-        - gcr.io/knative-nightly/github.com/knative/build-pipeline/cmd/nop:v20190131-9425e011
+        - gcr.io/knative-nightly/github.com/knative/build-pipeline/cmd/nop@sha256:72237f7e9dc16a04071aa641bc17954599fc52304f4909313473b223f54f004f
         - -bash-noop-image
-        - gcr.io/knative-nightly/github.com/knative/build-pipeline/cmd/bash:v20190131-9425e011
+        - gcr.io/knative-nightly/github.com/knative/build-pipeline/cmd/bash@sha256:532974589636f7b70bf01762cb1f046a99cbb3a0be0b6b48074a0d572d6dd9fe
         - -gsutil-image
-        - gcr.io/knative-nightly/github.com/knative/build-pipeline/cmd/gsutil:v20190131-9425e011
-        image: gcr.io/knative-nightly/github.com/knative/build-pipeline/cmd/controller:v20190131-9425e011
+        - gcr.io/knative-nightly/github.com/knative/build-pipeline/cmd/gsutil@sha256:77ed6660c582b5440f432e0e58c85ea1b321717d3e4c9495b7a8cd2ad0ce16d5
+        image: gcr.io/knative-nightly/github.com/knative/build-pipeline/cmd/controller@sha256:4ef25627eff38df65afff5e0579dd8d08bfcd21e8130109fd2910d66516ded97
         name: build-pipeline-controller
         volumeMounts:
         - mountPath: /etc/config-logging
@@ -340,6 +362,7 @@ spec:
       - configMap:
           name: config-logging
         name: config-logging
+
 ---
 apiVersion: apps/v1beta1
 kind: Deployment
@@ -354,7 +377,7 @@ spec:
         app: build-pipeline-webhook
     spec:
       containers:
-      - image: gcr.io/knative-nightly/github.com/knative/build-pipeline/cmd/webhook:v20190131-9425e011
+      - image: gcr.io/knative-nightly/github.com/knative/build-pipeline/cmd/webhook@sha256:d4309a7dd976276f9e8fd70b35232a903b6475bb0eeed03c6b89c115f912f9e7
         name: webhook
         volumeMounts:
         - mountPath: /etc/config-logging
@@ -364,3 +387,5 @@ spec:
       - configMap:
           name: config-logging
         name: config-logging
+
+---
