@@ -63,11 +63,19 @@ image::kibana-pod-logs.png[width=90%]
 
 == Kaniko Hello World - Dockerhub
 
-This is an hello world to build and push a Docker image to Dockerhub
+This is a hello world to build and push a Docker image to Dockerhub.
 
 === Prerequisite
 
-1. You need your `~/.docker/config.json` file configured
+
+1. A docker configuration file with credentials that can push to docker hub
+usable from a linux container. This command will generate a `config.json` file
+that is usable:
+
+[source,shell]
+--
+docker run --mount type=bind,src="$(pwd)",dst=/target -it --rm docker /bin/sh -c "docker login && cp ~/.docker/config.json /target/config.json"
+--
 
 === Script
 
