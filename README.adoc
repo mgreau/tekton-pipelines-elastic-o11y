@@ -10,7 +10,7 @@ image::docker-desktop-mac.png[width=50%]
 
 == Knative Pipeline Tutorials
 
-The `pipeline-elastic` folder contains several examples using *Knative Tasks and Pipelines*. +
+The *link:./pipeline-elastic[`pipeline-elastic`]* folder contains several examples using *Knative Tasks and Pipelines*. +
 The Elastic components (Elasticsearch, Beats and Kibana) are deployed to the Kubernetes cluster to collect the logs and metrics
 from the pods deployed by Knative. +
 The Knative components deployed are the official ones. There is no need to update those components to monitor them using the Elastic Stack.
