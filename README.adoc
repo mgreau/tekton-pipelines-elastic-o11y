@@ -15,9 +15,10 @@ The Elastic components (Elasticsearch, Beats and Kibana) are deployed to the Kub
 from the pods deployed by Knative. +
 The Knative components deployed are the official ones. There is no need to update those components to monitor them using the Elastic Stack.
 
-* `pipeline-elastic/01-hello-world` contains a *Task* and a *TaskRun* to print Hello World
+* link:./pipeline-elastic/README.adoc#hello-world[`pipeline-elastic/01-hello-world`] contains a *Task* and a *TaskRun* to print Hello World
+* [TODO] `pipeline-elastic/02-kaniko-build-push` contains a *Pipeline* to build and push a Docker image from a git repository using Kaniko
 * [TODO] `pipeline-elastic/02-gradle-build` contains a *Resource (git)*, a *Task* and a *TaskRun* to build a Gradle project
-* [TODO] `pipeline-elastic/03-docker-build` contains a *Pipeline* to build and push a Docker image from a git repository
+
 
 === Set up
 
