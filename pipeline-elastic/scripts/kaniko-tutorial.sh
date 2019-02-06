@@ -4,16 +4,15 @@ set -e
 [[ -n $DEBUG ]] && set -o xtrace
 
 readonly GIT_TOPLEVEL=$(git rev-parse --show-toplevel 2> /dev/null)
+readonly NAMESPACE=kaniko-tutorial
 
 # Deploy the all the components needed
-INIT="$1"
-if [[ -z "$INIT" ]]
+if ! kubectl get namespace "$NAMESPACE" >/dev/null 2>&1
 then
-  kubectl delete namespace kaniko-tutorial
+  kubectl create namespace "$NAMESPACE"
 fi
 
-kubectl create namespace kaniko-tutorial
-kubectl create secret generic kaniko-secret --from-file="${HOME}/.docker/config.json" -n kaniko-tutorial
+kubectl create secret generic kaniko-secret --from-file="config.json" -n "$NAMESPACE"
 
 kubectl apply -f "${GIT_TOPLEVEL}/pipeline-elastic/samples/03-kaniko-push-dockerhub"
 
