@@ -5,7 +5,7 @@ See it in action:
 
 * link:./demo/knative-kaniko-elastic-demo.mp4[]
 
-.Knative source to url example with Kaniko
+.Knative example with Kaniko (Dockerfile in git -> Docker image pushed to Dockerhub)
 image::kaniko-stream-logs.png[width=90%]
 
 == Prerequisite
