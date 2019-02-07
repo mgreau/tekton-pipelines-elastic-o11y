@@ -1,6 +1,13 @@
 = Monitor Knative deployments with the Elastic Stack
 :imagesdir: ./images
 
+See it in action:
+
+* link:./demo/knative-kaniko-elastic-demo.mp4[]
+
+.Knative source to url example with Kaniko
+image::kaniko-stream-logs.png[width=90%]
+
 == Prerequisite
 
 For now, these tutorials have only been tested on a laptop with Docker Desktop 2.0.0 with kubernetes enabled on Mac OS.
