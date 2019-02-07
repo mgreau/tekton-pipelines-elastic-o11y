@@ -1,6 +1,13 @@
 = Monitor Knative deployments with the Elastic Stack
 :imagesdir: ./images
 
+See it in action:
+
+* link:./demo/knative-kaniko-elastic-demo.mp4[]
+
+.Knative source to url example with Kaniko
+image::kaniko-stream-logs.png[width=90%]
+
 == Prerequisite
 
 For now, these tutorials have only been tested on a laptop with Docker Desktop 2.0.0 with kubernetes enabled on Mac OS.
@@ -16,7 +23,7 @@ from the pods deployed by Knative. +
 The Knative components deployed are the official ones. There is no need to update those components to monitor them using the Elastic Stack.
 
 * link:./pipeline-elastic/README.adoc#hello-world[`pipeline-elastic/01-hello-world`] contains a *Task* and a *TaskRun* to print Hello World
-* [TODO] `pipeline-elastic/02-kaniko-build-push` contains a *Pipeline* to build and push a Docker image from a git repository using Kaniko
+* [TODO] `pipeline-elastic/02-kaniko-build-push` contains a *Pipeline* to build and push a Docker image from a git repository using Kaniko (source to url example)
 * [TODO] `pipeline-elastic/02-gradle-build` contains a *Resource (git)*, a *Task* and a *TaskRun* to build a Gradle project
 
 

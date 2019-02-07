@@ -1,0 +1,22 @@
+apiVersion: pipeline.knative.dev/v1alpha1
+kind: PipelineResource
+metadata:
+  name: git-kaniko-helloworld
+  namespace: kaniko-tutorial
+spec:
+  type: git
+  params:
+  - name: url
+    value: https://github.com/mgreau/knative-tutorial-resources.git
+---
+apiVersion: pipeline.knative.dev/v1alpha1
+kind: PipelineResource
+metadata:
+  name: image-kaniko-helloworld
+  namespace: kaniko-tutorial
+spec:
+  type: image
+  params:
+    - name: url
+      value: {{DOCKER_HUB_USERNAME}}/kaniko-hello
+---
