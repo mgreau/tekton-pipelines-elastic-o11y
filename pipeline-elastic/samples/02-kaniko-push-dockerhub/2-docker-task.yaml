@@ -12,7 +12,7 @@ spec:
     params:
       - name: pathToDockerFile
         description: The path to the dockerfile to build
-        default: /workspace/workspace/Dockerfile
+        default: Dockerfile
   outputs:
     resources:
       - name: builtImage
@@ -30,7 +30,7 @@ spec:
       command:
         - /kaniko/executor
       args:
-        - --dockerfile=${inputs.params.pathToDockerFile}
+        - --dockerfile=/workspace/workspace/${inputs.params.pathToDockerFile}
         - --context=dir://workspace/workspace"
         - --destination=${outputs.resources.builtImage.url}
       volumeMounts:

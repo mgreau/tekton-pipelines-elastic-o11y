@@ -18,5 +18,5 @@ spec:
   type: image
   params:
     - name: url
-      value: mgreau/kaniko-hello
+      value: $REGISTRY_USER/kaniko-hello
 ---

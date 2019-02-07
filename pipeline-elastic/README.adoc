@@ -77,7 +77,29 @@ that is usable:
 docker run --mount type=bind,src="$(pwd)",dst=/target -it --rm docker /bin/sh -c "docker login && cp ~/.docker/config.json /target/config.json"
 --
 
-=== Script
+2. Replace the `$REGISTRY_USER` with your **DockerHub username** in the `samples/02-kaniko-push-dockerhub/0-resources.yaml` file:
+
+[source,yaml]
+--
+apiVersion: pipeline.knative.dev/v1alpha1
+kind: PipelineResource
+metadata:
+  name: image-kaniko-helloworld
+  namespace: kaniko-tutorial
+spec:
+  type: image
+  params:
+    - name: url
+      value: $REGISTRY_USER/kaniko-hello
+---
+--
+
+
+=== Run and follow the process
+
+Execute the following script to deploy and run the `Task` which will build and push the Docker image to Dockerhub. +
+You can follow the logs in Kibana
+
 
 [source,shell]
 --

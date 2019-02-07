@@ -14,6 +14,6 @@ fi
 
 kubectl create secret generic kaniko-secret --from-file="config.json" -n "$NAMESPACE"
 
-kubectl apply -f "${GIT_TOPLEVEL}/pipeline-elastic/samples/03-kaniko-push-dockerhub"
+kubectl apply -f "${GIT_TOPLEVEL}/pipeline-elastic/samples/02-kaniko-push-dockerhub"
 
 
