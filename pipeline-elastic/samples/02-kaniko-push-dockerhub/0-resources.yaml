@@ -7,7 +7,7 @@ spec:
   type: git
   params:
   - name: url
-    value: https://github.com/mgreau/kaniko-helloworld.git
+    value: https://github.com/mgreau/knative-tutorial-resources.git
 ---
 apiVersion: pipeline.knative.dev/v1alpha1
 kind: PipelineResource
@@ -18,5 +18,5 @@ spec:
   type: image
   params:
     - name: url
-      value: $REGISTRY_USER/kaniko-hello
+      value: mgreau/kaniko-hello
 ---
