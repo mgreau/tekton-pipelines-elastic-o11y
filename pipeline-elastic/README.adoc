@@ -63,7 +63,9 @@ image::kibana-pod-logs.png[width=90%]
 
 == Kaniko Hello World - Dockerhub
 
-This is a hello world to build and push a Docker image to Dockerhub.
+This is a hello world to build and push a Docker image to Dockerhub:
+
+* link:../demo/knative-kaniko-elastic-demo.mp4[]
 
 === Prerequisite
 
