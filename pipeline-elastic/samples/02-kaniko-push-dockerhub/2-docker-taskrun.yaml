@@ -1,0 +1,23 @@
+apiVersion: pipeline.knative.dev/v1alpha1
+kind: TaskRun
+metadata:
+  name: kaniko-run
+  namespace: kaniko-tutorial
+spec:
+  taskRef:
+    name: kaniko
+  trigger:
+      type: manual
+  inputs:
+    resources:
+    - name: workspace
+      resourceRef:
+        name: git-kaniko-helloworld
+    params:
+      - name: pathToDockerFile
+        value: Dockerfile.gradle
+  outputs:
+    resources:
+      - name: builtImage
+        resourceRef:
+          name: image-kaniko-helloworld
