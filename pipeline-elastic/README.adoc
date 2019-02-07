@@ -74,7 +74,7 @@ that is usable:
 
 [source,shell]
 --
-docker run --mount type=bind,src="$(pwd)",dst=/target -it --rm docker /bin/sh -c "docker login && cp ~/.docker/config.json /target/config.json"
+docker run --mount type=bind,src="$(pwd)",dst=/target -it --rm docker /bin/sh -c "docker login https://index.docker.io/v1 && cp ~/.docker/config.json /target/config.json"
 --
 
 2. Replace the `$REGISTRY_USER` with your **DockerHub username** in the `samples/02-kaniko-push-dockerhub/0-resources.yaml` file:
