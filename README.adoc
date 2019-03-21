@@ -1,4 +1,4 @@
-= Monitor Knative deployments with the Elastic Stack
+= Monitor Tekton Pipelines with the Elastic Stack
 :imagesdir: ./images
 
 See it in action:
