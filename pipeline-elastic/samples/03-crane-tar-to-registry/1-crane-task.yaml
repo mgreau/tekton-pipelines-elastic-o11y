@@ -1,0 +1,50 @@
+# Tasks related to Docker work
+apiVersion: pipeline.knative.dev/v1alpha1
+kind: Task
+metadata:
+  name: crane
+  namespace: kaniko-tutorial
+spec:
+  volumes:
+    - name: volume-artifacts
+      emptyDir: {}
+    - name: docker-cfg
+      secret:
+        secretName: kaniko-secret
+        items:
+          - key: config.json
+            path: config.json
+  steps:
+    - name: pullImage
+      image: gcr.io/go-containerregistry/crane@sha256:fb1358cc2e12e5e440ef3fa4d9d30959600f7431c4ecd25568f34ade82075ece
+      command:
+      args:
+        - pull
+        - alpine
+        - /etc/artifacts/alpine.tar
+      volumeMounts:
+        - name: volume-artifacts
+          mountPath: /etc/artifacts
+    - name: compress
+      image: ubuntu:18.04
+      command:
+        - tar
+      args:
+        - -czvf
+        - /etc/artifacts/alpine.tar.gz
+        - /etc/artifacts/alpine.tar
+      volumeMounts:
+        - name: volume-artifacts
+          mountPath: /etc/artifacts
+    - name: push
+      image: gcr.io/go-containerregistry/crane@sha256:fb1358cc2e12e5e440ef3fa4d9d30959600f7431c4ecd25568f34ade82075ece
+      args:
+        = push
+        - /etc/artifacts/alpine.tar.gz
+        - index.docker.io/mgreau/crane-hello
+      volumeMounts:
+        - name: docker-cfg
+          mountPath: /home/.docker/
+        - name: volume-artifacts
+          mountPath: /etc/artifacts
+---

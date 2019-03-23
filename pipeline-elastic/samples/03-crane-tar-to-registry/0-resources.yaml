@@ -1,0 +1,11 @@
+apiVersion: pipeline.knative.dev/v1alpha1
+kind: PipelineResource
+metadata:
+  name: image-crane-helloworld
+  namespace: crane-tutorial
+spec:
+  type: image
+  params:
+    - name: url
+      value: index.docker.io/mgreau/crane-hello
+---
