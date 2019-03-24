@@ -1,4 +1,4 @@
-= Knative Pipeline Tutorials
+= Tekton Pipelines Tutorials
 :imagesdir: ../images
 
 == Prerequisite
@@ -13,7 +13,7 @@ There are 2 files `01-task.yaml` and `02-task-run.yaml`
 .01-task.yaml
 [source,yaml]
 --
-apiVersion: pipeline.knative.dev/v1alpha1
+apiVersion: tekton.dev/v1alpha1
 kind: Task
 metadata:
   name: echo-hello-world
@@ -31,7 +31,7 @@ spec:
 .02-task-run.yaml
 [source,yaml]
 --
-apiVersion: pipeline.knative.dev/v1alpha1
+apiVersion: tekton.dev/v1alpha1
 kind: TaskRun
 metadata:
   name: echo-hello-world-task-run

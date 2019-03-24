@@ -3,9 +3,9 @@
 
 See it in action:
 
-* link:./demo/knative-kaniko-elastic-demo.mp4[]
+* link:./demo/tekton-kaniko-elastic-demo.mp4[]
 
-.Knative example with Kaniko (Dockerfile in git -> Docker image pushed to Dockerhub)
+.tekton example with Kaniko (Dockerfile in git -> Docker image pushed to Dockerhub)
 image::kaniko-stream-logs.png[width=90%]
 
 == Prerequisite
@@ -15,12 +15,12 @@ For now, these tutorials have only been tested on a laptop with Docker Desktop 2
 image::docker-desktop-mac.png[width=50%]
 
 
-== Knative Pipeline Tutorials
+== tekton Pipeline Tutorials
 
-The *link:./pipeline-elastic[`pipeline-elastic`]* folder contains several examples using *Knative Tasks and Pipelines*. +
+The *link:./pipeline-elastic[`pipeline-elastic`]* folder contains several examples using *tekton Tasks and Pipelines*. +
 The Elastic components (Elasticsearch, Beats and Kibana) are deployed to the Kubernetes cluster to collect the logs and metrics
-from the pods deployed by Knative. +
-The Knative components deployed are the official ones. There is no need to update those components to monitor them using the Elastic Stack.
+from the pods deployed by tekton. +
+The tekton components deployed are the official ones. There is no need to update those components to monitor them using the Elastic Stack.
 
 * link:./pipeline-elastic/README.adoc#hello-world[`pipeline-elastic/01-hello-world`] contains a *Task* and a *TaskRun* to print Hello World
 * link:./pipeline-elastic/README.adoc#kaniko-hello-world---dockerhub[`pipeline-elastic/02-kaniko-push-dockerhub`] contains a *Task* and a *TaskRun* to build and push a Docker image from a git repository using Kaniko 
@@ -44,8 +44,11 @@ Then wait until the pods are running before starting the tutorials
 # Check Elastic pods
 $ kubectl get pods -w -n default
 
-# Check Knative Build Pipeline pods
-$ kubectl get pods -w -n knative-build-pipeline
+# Check tekton Build Pipeline pods
+$ kubectl get pods -w -n tekton-pipelines
+NAME                                           READY   STATUS    RESTARTS   AGE
+tekton-pipelines-controller-77f74f5bcf-rbj8s   1/1     Running   0          1m
+tekton-pipelines-webhook-f76c97965-5xkxq       1/1     Running   0          1m
 --
 
 === Get Access to Kibana
@@ -69,7 +72,7 @@ Then you can access to the http://localhost:30601/app/infra#/home?_g=()&waffleOp
 image::kibana-infrastructure-app.png[width=90%]
 
 
-Check the Knative Pipeline Controller logs to make sure everything is OK
+Check the Tekton Pipeline Controller logs to make sure everything is OK
 
 image::kibana-k8s-logs.gif[width=90%]
 

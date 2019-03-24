@@ -1,4 +1,4 @@
-apiVersion: pipeline.knative.dev/v1alpha1
+apiVersion: tekton.dev/v1alpha1
 kind: Task
 metadata:
   name: echo-hello-world
@@ -10,4 +10,4 @@ spec:
     command:
       - echo
     args:
-      - "Hello World from Knative / Elastic tutorials!"
+      - "Hello World from Tekton Pipelines / Elastic tutorials!"

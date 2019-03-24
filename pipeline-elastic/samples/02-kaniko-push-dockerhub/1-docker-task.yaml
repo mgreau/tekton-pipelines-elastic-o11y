@@ -1,5 +1,5 @@
 # Tasks related to Docker work
-apiVersion: pipeline.knative.dev/v1alpha1
+apiVersion: tekton.dev/v1alpha1
 kind: Task
 metadata:
   name: kaniko

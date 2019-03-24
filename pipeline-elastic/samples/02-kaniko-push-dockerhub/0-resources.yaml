@@ -1,4 +1,4 @@
-apiVersion: pipeline.knative.dev/v1alpha1
+apiVersion: tekton.dev/v1alpha1
 kind: PipelineResource
 metadata:
   name: git-kaniko-helloworld
@@ -9,7 +9,7 @@ spec:
   - name: url
     value: https://github.com/mgreau/knative-tutorial-resources.git
 ---
-apiVersion: pipeline.knative.dev/v1alpha1
+apiVersion: tekton.dev/v1alpha1
 kind: PipelineResource
 metadata:
   name: image-kaniko-helloworld
