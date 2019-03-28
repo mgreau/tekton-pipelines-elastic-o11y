@@ -3,6 +3,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: filebeat-config
+  namespace: default
   labels:
     app: filebeat
 data:
@@ -28,6 +29,7 @@ apiVersion: extensions/v1beta1
 kind: DaemonSet
 metadata:
   name: filebeat
+  namespace: default
   labels:
     app: filebeat
 spec:
@@ -49,7 +51,7 @@ spec:
             - until wget -q kibana:5601; do echo Waiting for kibana; sleep 1; done
       containers:
       - name: filebeat
-        image: docker.elastic.co/beats/filebeat:6.6.0
+        image: docker.elastic.co/beats/filebeat:6.7.0
         imagePullPolicy: Always
         args: [
           "-c", "/etc/filebeat.yml",
@@ -107,6 +109,7 @@ apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: ClusterRoleBinding
 metadata:
   name: filebeat
+  namespace: default
 subjects:
 - kind: ServiceAccount
   name: filebeat
@@ -120,6 +123,7 @@ apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: ClusterRole
 metadata:
   name: filebeat
+  namespace: default
   labels:
     app: filebeat
 rules:
@@ -136,6 +140,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: filebeat
+  namespace: default
   labels:
     k8s-app: filebeat
 ---

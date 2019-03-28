@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: kibana
+  namespace: default
   labels:
     app: kibana
 spec:
@@ -26,7 +27,7 @@ spec:
             - until wget -q elasticsearch:9200; do echo Waiting for elasticsearch; sleep 1; done
       containers:
       - name: kibana
-        image: docker.elastic.co/kibana/kibana:6.6.0
+        image: docker.elastic.co/kibana/kibana:6.7.0
         resources:
           limits:
             cpu: 1000m
@@ -43,6 +44,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: kibana
+  namespace: default
   labels:
     service: kibana
 spec:
