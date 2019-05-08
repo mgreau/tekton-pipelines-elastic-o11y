@@ -15,7 +15,7 @@ For now, these tutorials have only been tested on a laptop with Docker Desktop 2
 image::docker-desktop-mac.png[width=50%]
 
 
-== tekton Pipeline Tutorials
+== Tekton Pipelines Tutorials
 
 The *link:./pipeline-elastic[`pipeline-elastic`]* folder contains several examples using *tekton Tasks and Pipelines*. +
 The Elastic components (Elasticsearch, Beats and Kibana) are deployed to the Kubernetes cluster to collect the logs and metrics
@@ -58,7 +58,7 @@ When the set-up is done, you should have a *Kibana pod up and running*:
 [source,shell]
 --
 # Check Elastic pods
-$ kubectl get pods -n default
+$ kubectl get pods -n elastic-stack
 NAME                                 READY     STATUS    RESTARTS   AGE
 elasticsearch-7bf6cd96cd-r6llt       1/1       Running   0          4m
 filebeat-5lrwg                       1/1       Running   0          4m
