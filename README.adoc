@@ -42,7 +42,7 @@ Then wait until the pods are running before starting the tutorials
 [source,shell]
 --
 # Check Elastic pods
-$ kubectl get pods -w -n default
+$ kubectl get pods -w -n elastic-stack
 
 # Check tekton Build Pipeline pods
 $ kubectl get pods -w -n tekton-pipelines
