@@ -1,0 +1,52 @@
+#
+# Build and Push a docker image from a 
+# Docker build context in a directory.
+##
+apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: kaniko
+  namespace: orlando-demo
+spec:
+  inputs:
+    resources:
+    - name: workspace
+      type: git
+    params:
+      - name: pathToDockerFile
+        description: The path to the dockerfile to build
+        default: ./Dockerfile
+      - name: pathToContext
+        description:
+          The build context used by Kaniko
+          (https://github.com/GoogleContainerTools/kaniko#kaniko-build-contexts)
+        default: /workspace
+  outputs:
+    resources:
+      - name: builtImage
+        type: image
+  volumes:
+    - name: docker-cfg
+      secret:
+        secretName: registries-creds
+        items:
+          - key: config.json
+            path: config.json
+  steps:
+    - name: build-and-push
+      image: gcr.io/kaniko-project/executor:debug
+      command:
+        - /kaniko/executor
+      args:
+        - --dockerfile=${inputs.params.pathToDockerFile}
+        - --destination=${outputs.resources.builtImage.url}
+        - --context=dir:///${inputs.params.pathToContext}
+        - --cache=false
+      workingDir: "/workspace"
+      env:
+        - name: "DOCKER_CONFIG"
+          value: "/builder/home/.docker/"
+      volumeMounts:
+        - name: docker-cfg
+          mountPath: /builder/home/.docker/
+---

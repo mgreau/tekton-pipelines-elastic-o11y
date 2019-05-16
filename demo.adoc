@@ -1,0 +1,36 @@
+= Tekton Pipelines Tutorials
+:imagesdir: ../images
+
+== Prerequisite
+
+Make sure you have your environment set-up like explained in the link:../README.adoc[README.adoc]
+
+
+== Orlando DEMO
+
+=== Run and follow the process
+
+
+[source,shell]
+--
+
+# Install Elastic Stack + Tekton Pipelines
+./pipeline-elastic/scripts/set-up-env.sh init
+
+# Open Kibana
+open http://localhost:30601
+
+# switch to orlando-demo namespace
+kns orlando-demo
+
+# Create secret to push to Docker Hub
+kubectl create secret generic registries-creds --from-file="/tmp/config.json" -n orlando-demo
+
+# Install the task
+k apply -f pipeline-elastic/samples/02-kaniko-push-dockerhub/1-kaniko-task.yaml
+
+# Run it
+k apply -f pipeline-elastic/samples/02-kaniko-push-dockerhub/2-build-and-push-taskrun.yaml
+
+--
+
