@@ -13,6 +13,7 @@ Make sure you have your environment set-up like explained in the link:../README.
 
 [source,shell]
 --
+cd /Users/mgreau/elastic/git/elastic/tekton/tekton-pipelines-elastic-tutorials
 
 # Install Elastic Stack + Tekton Pipelines
 ./pipeline-elastic/scripts/set-up-env.sh init
@@ -34,3 +35,11 @@ k apply -f pipeline-elastic/samples/02-kaniko-push-dockerhub/2-build-and-push-ta
 
 --
 
+=== clean up
+
+[source,shell]
+--
+k delete namespace tekton-pipelines
+k delete namespace elastic-stack
+k delete namespace orlando-demo
+--

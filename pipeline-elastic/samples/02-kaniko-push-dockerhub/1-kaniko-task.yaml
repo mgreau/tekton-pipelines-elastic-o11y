@@ -1,6 +1,7 @@
 #
 # Build and Push a docker image from a 
 # Docker build context in a directory.
+# (DAEMONLESS)
 ##
 apiVersion: tekton.dev/v1alpha1
 kind: Task
