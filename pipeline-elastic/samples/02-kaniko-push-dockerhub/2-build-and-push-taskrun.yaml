@@ -2,7 +2,7 @@ apiVersion: tekton.dev/v1alpha1
 kind: PipelineResource
 metadata:
   name: git-kaniko-helloworld
-  namespace: orlando-demo
+  namespace: tutorials
 spec:
   type: git
   params:
@@ -10,21 +10,10 @@ spec:
     value: https://github.com/mgreau/knative-tutorial-resources.git
 ---
 apiVersion: tekton.dev/v1alpha1
-kind: PipelineResource
-metadata:
-  name: image-kaniko-helloworld
-  namespace: orlando-demo
-spec:
-  type: image
-  params:
-    - name: url
-      value: mgreau/demo-orlando:1.1
----
-apiVersion: tekton.dev/v1alpha1
 kind: TaskRun
 metadata:
   name: build-and-push
-  namespace: orlando-demo
+  namespace: tutorials
 spec:
   taskRef:
     name: kaniko
@@ -43,3 +32,14 @@ spec:
       - name: builtImage
         resourceRef:
           name: image-kaniko-helloworld
+---
+apiVersion: tekton.dev/v1alpha1
+kind: PipelineResource
+metadata:
+  name: image-kaniko-helloworld
+  namespace: tutorials
+spec:
+  type: image
+  params:
+    - name: url
+      value: {{DOCKER_HUB_USERNAME}}/kaniko-hello

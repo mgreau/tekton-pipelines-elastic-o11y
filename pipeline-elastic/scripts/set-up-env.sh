@@ -14,7 +14,7 @@ docker pull docker.elastic.co/beats/metricbeat:${TAG}
 
 # Create the namespace where the pods will be deployed
 kubectl create namespace elastic-stack
-kubectl create namespace orlando-demo
+kubectl create namespace tutorials
 kubectl apply -f "${GIT_TOPLEVEL}/pipeline-elastic/config"
 
 

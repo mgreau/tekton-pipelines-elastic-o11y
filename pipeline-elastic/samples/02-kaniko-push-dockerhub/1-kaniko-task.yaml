@@ -7,7 +7,7 @@ apiVersion: tekton.dev/v1alpha1
 kind: Task
 metadata:
   name: kaniko
-  namespace: orlando-demo
+  namespace: tutorials
 spec:
   inputs:
     resources:
