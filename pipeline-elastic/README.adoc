@@ -69,7 +69,6 @@ This is a hello world to build and push a Docker image to Dockerhub:
 
 === Prerequisite
 
-
 1. A docker configuration file with credentials that can push to docker hub
 usable from a linux container. This command will generate a `config.json` file
 that is usable:
