@@ -27,7 +27,7 @@ spec:
             - until wget -q elasticsearch:9200; do echo Waiting for elasticsearch; sleep 1; done
       containers:
       - name: kibana
-        image: docker.elastic.co/kibana/kibana:7.0.1
+        image: docker.elastic.co/kibana/kibana:7.1.1
         resources:
           limits:
             cpu: 1000m
