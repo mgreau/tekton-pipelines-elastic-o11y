@@ -1,0 +1,107 @@
+= Tekton Pipelines Tutorials
+:imagesdir: ../images
+
+== Prerequisite
+
+Make sure you have your environment set-up like explained in the link:../README.adoc[README.adoc]
+
+
+== Hello World
+
+There are 2 files `01-task.yaml` and `02-task-run.yaml`
+
+.01-task.yaml
+[source,yaml]
+--
+apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: echo-hello-world
+  namespace: tutorials
+spec:
+  steps:
+  - name: echo
+    image: busybox
+    command:
+      - echo
+    args:
+      - "Hello World from Knative / Elastic tutorials!"
+--
+
+.02-task-run.yaml
+[source,yaml]
+--
+apiVersion: tekton.dev/v1alpha1
+kind: TaskRun
+metadata:
+  name: echo-hello-world-task-run
+  namespace: tutorials
+spec:
+  taskRef:
+    name: echo-hello-world
+  trigger:
+    type: manual
+--
+
+[source,shell]
+--
+# Generate hello world Task and TaskRun
+$ kubectl apply -f 01-hello-world/
+task.pipeline.knative.dev "echo-hello-world" created
+taskrun.pipeline.knative.dev "echo-hello-world-task-run" created
+
+$ kubectl get pods -n tutorials
+NAME                                   READY     STATUS      RESTARTS   AGE
+echo-hello-world-task-run-pod-f4ee3b   0/1       Completed   0          35s
+--
+
+Access to the http://localhost:30601/app/infra#/logs?logFilter=(expression:'kubernetes.labels.build.knative.dev%2FbuildName:%20%22echo-hello-world-task-run%22',kind:kuery)&logPosition=(position:(tiebreaker:3620,time:1547642338000),streamLive:!t)&_g=()[Pod Logs] in Kibana
+
+image::kibana-pod-logs.png[width=90%]
+
+
+
+== Kaniko Hello World - Dockerhub
+
+This is a hello world to build and push a Docker image to Dockerhub:
+
+* link:../demo/knative-kaniko-elastic-demo.mp4[]
+
+=== Prerequisite
+
+1. A docker configuration file with credentials that can push to docker hub
+usable from a linux container. This command will generate a `config.json` file
+that is usable:
+
+[source,shell]
+--
+docker run --mount type=bind,src="$(pwd)",dst=/target -it --rm docker /bin/sh -c "docker login https://index.docker.io/v1 && cp ~/.docker/config.json /target/config.json"
+--
+
+=== Run and follow the process
+
+Set the `DOCKER_HUB_USERNAME` variable to your docker hub username, this determines where the hello-world image will be pushed. +
+Execute the following script to deploy and run the `Task` which will build and push the Docker image to Dockerhub. +
+You can stream the logs in real-time with Kibana
+
+
+[source,shell]
+--
+DOCKER_HUB_USERNAME=<your-docker-hub-username>
+./scripts/kaniko-tutorial.sh
+
+namespace "kaniko-tutorial" deleted
+namespace/kaniko-tutorial created
+secret/kaniko-secret created
+pipelineresource.pipeline.knative.dev/git-kaniko-helloworld created
+pipelineresource.pipeline.knative.dev/image-kaniko-helloworld created
+task.pipeline.knative.dev/kaniko created
+taskrun.pipeline.knative.dev/kaniko-run created
+
+kubectl get pods -w -n kaniko-tutorial
+NAME                        READY   STATUS      RESTARTS   AGE
+kaniko-run-pod-e5ec3d   0/1     Completed   0          44s
+--
+
+image::kaniko-stream-logs.png[width=90%]
+image::kaniko-pushed-dockerhub.png[width=90%]

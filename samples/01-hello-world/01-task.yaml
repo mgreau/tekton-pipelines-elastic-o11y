@@ -1,0 +1,13 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: echo-hello-world
+  namespace: tutorials
+spec:
+  steps:
+  - name: echo
+    image: busybox
+    command:
+      - echo
+    args:
+      - "Hello World from Tekton Pipelines / Elastic tutorials!"
