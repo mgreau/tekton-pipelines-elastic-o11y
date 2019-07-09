@@ -51,7 +51,7 @@ spec:
             - until wget -q kibana:5601; do echo Waiting for kibana; sleep 1; done
       containers:
       - name: filebeat
-        image: docker.elastic.co/beats/filebeat:7.1.1
+        image: docker.elastic.co/beats/filebeat:7.2.0
         imagePullPolicy: Always
         args: [
           "-c", "/etc/filebeat.yml",
