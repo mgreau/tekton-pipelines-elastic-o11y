@@ -10,14 +10,14 @@ NAMESPACES="tutorials elastic-stack tekton-pipelines"
 for NAMESPACE in $NAMESPACES
 do
   if kubectl get namespace $NAMESPACE; then
-    kubectl delete namespace $NAMESPACE
+    kubectl delete namespace $NAMESPACE || true
   fi
 done
 
-kubectl delete namespace elastic-stack
-kubectl delete namespace tekton-pipelines
-
-
+helm del --purge elasticsearch || true
+helm del --purge kibana || true
+helm del --purge filebeat || true
+helm del --purge metricbeat || true
 
 
 

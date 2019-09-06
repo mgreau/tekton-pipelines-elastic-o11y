@@ -1,7 +1,10 @@
 = Tekton Pipelines and the Elastic Stack
 :imagesdir: ./images
 
-See it in action:
+* Tekton **v0.10.0**
+* Elastic Stack **7.5.2** deployed using official https://github.com/elastic/helm-charts)[Elastic Helm Charts]
+
+== See it in action:
 
 * link:./doc/tekton-kaniko-elastic-demo.mp4[]
 
@@ -79,3 +82,74 @@ image::kibana-k8s-logs.gif[width=90%]
 === Ready to start!
 
 *CONGRATS* you are now ready to start the link:./samples/README.adoc[tutorials]!
+
+=== Observability
+
+To check the Tekton metrics
+
+```
+kubectl port-forward deployment/tekton-pipelines-controller 9090 --namespace tekton-pipelines
+Forwarding from 127.0.0.1:9090 -> 9090
+Forwarding from [::1]:9090 -> 9090
+Handling connection for 9090
+Handling connection for 9090
+```
+
+and then
+```
+curl http://localhost:9090/metrics
+# HELP tekton_reconcile_count Number of reconcile operations
+# TYPE tekton_reconcile_count counter
+tekton_reconcile_count{key="tutorials/echo-hello-world-task-run",reconciler="TaskRun",success="false"} 2
+tekton_reconcile_count{key="tutorials/echo-hello-world-task-run",reconciler="TaskRun",success="true"} 9
+# HELP tekton_reconcile_latency Latency of reconcile operations
+# TYPE tekton_reconcile_latency histogram
+tekton_reconcile_latency_bucket{key="tutorials/echo-hello-world-task-run",reconciler="TaskRun",success="false",le="10"} 0
+tekton_reconcile_latency_bucket{key="tutorials/echo-hello-world-task-run",reconciler="TaskRun",success="false",le="100"} 1
+tekton_reconcile_latency_bucket{key="tutorials/echo-hello-world-task-run",reconciler="TaskRun",success="false",le="1000"} 2
+tekton_reconcile_latency_bucket{key="tutorials/echo-hello-world-task-run",reconciler="TaskRun",success="false",le="10000"} 2
+tekton_reconcile_latency_bucket{key="tutorials/echo-hello-world-task-run",reconciler="TaskRun",success="false",le="30000"} 2
+tekton_reconcile_latency_bucket{key="tutorials/echo-hello-world-task-run",reconciler="TaskRun",success="false",le="60000"} 2
+tekton_reconcile_latency_bucket{key="tutorials/echo-hello-world-task-run",reconciler="TaskRun",success="false",le="+Inf"} 2
+tekton_reconcile_latency_sum{key="tutorials/echo-hello-world-task-run",reconciler="TaskRun",success="false"} 274
+tekton_reconcile_latency_count{key="tutorials/echo-hello-world-task-run",reconciler="TaskRun",success="false"} 2
+tekton_reconcile_latency_bucket{key="tutorials/echo-hello-world-task-run",reconciler="TaskRun",success="true",le="10"} 4
+tekton_reconcile_latency_bucket{key="tutorials/echo-hello-world-task-run",reconciler="TaskRun",success="true",le="100"} 9
+tekton_reconcile_latency_bucket{key="tutorials/echo-hello-world-task-run",reconciler="TaskRun",success="true",le="1000"} 9
+tekton_reconcile_latency_bucket{key="tutorials/echo-hello-world-task-run",reconciler="TaskRun",success="true",le="10000"} 9
+tekton_reconcile_latency_bucket{key="tutorials/echo-hello-world-task-run",reconciler="TaskRun",success="true",le="30000"} 9
+tekton_reconcile_latency_bucket{key="tutorials/echo-hello-world-task-run",reconciler="TaskRun",success="true",le="60000"} 9
+tekton_reconcile_latency_bucket{key="tutorials/echo-hello-world-task-run",reconciler="TaskRun",success="true",le="+Inf"} 9
+tekton_reconcile_latency_sum{key="tutorials/echo-hello-world-task-run",reconciler="TaskRun",success="true"} 187
+tekton_reconcile_latency_count{key="tutorials/echo-hello-world-task-run",reconciler="TaskRun",success="true"} 9
+# HELP tekton_running_taskruns_count Number of taskruns executing currently
+# TYPE tekton_running_taskruns_count gauge
+tekton_running_taskruns_count 0
+# HELP tekton_taskrun_count number of taskruns
+# TYPE tekton_taskrun_count counter
+tekton_taskrun_count{status="success"} 1
+# HELP tekton_taskrun_duration_seconds The taskrun's execution time in seconds
+# TYPE tekton_taskrun_duration_seconds histogram
+tekton_taskrun_duration_seconds_bucket{namespace="tutorials",status="success",task="echo-hello-world",taskrun="echo-hello-world-task-run",le="10"} 0
+tekton_taskrun_duration_seconds_bucket{namespace="tutorials",status="success",task="echo-hello-world",taskrun="echo-hello-world-task-run",le="30"} 1
+tekton_taskrun_duration_seconds_bucket{namespace="tutorials",status="success",task="echo-hello-world",taskrun="echo-hello-world-task-run",le="60"} 1
+tekton_taskrun_duration_seconds_bucket{namespace="tutorials",status="success",task="echo-hello-world",taskrun="echo-hello-world-task-run",le="300"} 1
+tekton_taskrun_duration_seconds_bucket{namespace="tutorials",status="success",task="echo-hello-world",taskrun="echo-hello-world-task-run",le="900"} 1
+tekton_taskrun_duration_seconds_bucket{namespace="tutorials",status="success",task="echo-hello-world",taskrun="echo-hello-world-task-run",le="1800"} 1
+tekton_taskrun_duration_seconds_bucket{namespace="tutorials",status="success",task="echo-hello-world",taskrun="echo-hello-world-task-run",le="3600"} 1
+tekton_taskrun_duration_seconds_bucket{namespace="tutorials",status="success",task="echo-hello-world",taskrun="echo-hello-world-task-run",le="5400"} 1
+tekton_taskrun_duration_seconds_bucket{namespace="tutorials",status="success",task="echo-hello-world",taskrun="echo-hello-world-task-run",le="10800"} 1
+tekton_taskrun_duration_seconds_bucket{namespace="tutorials",status="success",task="echo-hello-world",taskrun="echo-hello-world-task-run",le="21600"} 1
+tekton_taskrun_duration_seconds_bucket{namespace="tutorials",status="success",task="echo-hello-world",taskrun="echo-hello-world-task-run",le="43200"} 1
+tekton_taskrun_duration_seconds_bucket{namespace="tutorials",status="success",task="echo-hello-world",taskrun="echo-hello-world-task-run",le="86400"} 1
+tekton_taskrun_duration_seconds_bucket{namespace="tutorials",status="success",task="echo-hello-world",taskrun="echo-hello-world-task-run",le="+Inf"} 1
+tekton_taskrun_duration_seconds_sum{namespace="tutorials",status="success",task="echo-hello-world",taskrun="echo-hello-world-task-run"} 13
+tekton_taskrun_duration_seconds_count{namespace="tutorials",status="success",task="echo-hello-world",taskrun="echo-hello-world-task-run"} 1
+# HELP tekton_taskruns_pod_latency scheduling latency for the taskruns pods
+# TYPE tekton_taskruns_pod_latency gauge
+tekton_taskruns_pod_latency{namespace="tutorials",pod="echo-hello-world-task-run-pod-5xqd7",task="echo-hello-world",taskrun="echo-hello-world-task-run"} 0
+# HELP tekton_work_queue_depth Depth of the work queue
+# TYPE tekton_work_queue_depth gauge
+tekton_work_queue_depth{reconciler="TaskRun"} 0
+````
+

@@ -6,5 +6,3 @@ metadata:
 spec:
   taskRef:
     name: echo-hello-world
-  trigger:
-    type: manual
