@@ -34,6 +34,12 @@ metricbeatConfig:
       process.include_top_n:
         by_cpu: 5
         by_memory: 5
+    - module: tekton
+      enabled: true
+      metricsets:
+        - taskruns
+      period: 10s
+      hosts: ["tekton-pipelines-controller:9090/metrics"]
     - module: system
       period: 1m
       metricsets:
@@ -87,7 +93,7 @@ envFrom: []
 # Root directory where metricbeat will write data to in order to persist registry data across pod restarts (file position and other metadata).
 hostPathRoot: /var/lib
 
-image: "docker.elastic.co/beats/metricbeat"
+image: "mgreau/metricbeat-tekton"
 imagePullPolicy: "IfNotPresent"
 imagePullSecrets: []
 

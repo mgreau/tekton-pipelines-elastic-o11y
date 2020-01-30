@@ -1,0 +1,12 @@
+version: '2.3'
+
+services:
+  beat:
+    build: ${PWD}/.
+    environment:
+      - TEST_ENVIRONMENT=false
+    working_dir: /go/src/github.com/elastic/beats/metricbeat
+    volumes:
+      - ${PWD}/..:/go/src/github.com/elastic/beats/
+    network_mode: host
+    command: make
