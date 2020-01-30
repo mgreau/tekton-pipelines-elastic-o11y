@@ -37,6 +37,7 @@ metricbeatConfig:
     - module: tekton
       enabled: true
       metricsets:
+        - pipelines_stats
         - taskruns
       period: 10s
       hosts: ["tekton-pipelines-controller:9090/metrics"]
@@ -93,7 +94,7 @@ envFrom: []
 # Root directory where metricbeat will write data to in order to persist registry data across pod restarts (file position and other metadata).
 hostPathRoot: /var/lib
 
-image: "mgreau/metricbeat-tekton"
+image: "mgreau/metricbeat-tekton-stats"
 imagePullPolicy: "IfNotPresent"
 imagePullSecrets: []
 

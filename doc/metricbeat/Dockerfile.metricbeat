@@ -1,0 +1,12 @@
+FROM docker.elastic.co/beats/metricbeat:7.5.2
+
+USER root
+ADD metricbeat /usr/share/metricbeat/metricbeat
+ADD metricbeat.reference.yml /usr/share/metricbeat/metricbeat.reference.yml
+
+RUN chown -R root:metricbeat /usr/share/metricbeat && \
+ find /usr/share/metricbeat -type d -exec chmod 0750 {} \; && \
+ find /usr/share/metricbeat -type f -exec chmod 0640 {} \; && \
+ chmod 0750 /usr/share/metricbeat/metricbeat
+
+USER metricbeat
