@@ -5,6 +5,8 @@ set -e
 
 readonly GIT_TOPLEVEL=$(git rev-parse --show-toplevel 2> /dev/null)
 
+source "${GIT_TOPLEVEL}/scripts/tekton-utils.sh"
+
 # Create the namespace where the pods will be deployed
 NAMESPACE="tekton-pipelines"
 kubectl create namespace "${NAMESPACE}"
@@ -24,16 +26,7 @@ helm install --name metricbeat elastic/metricbeat --version ${ELASTIC_HELM_CHART
 helm install --name kibana elastic/kibana --version ${ELASTIC_HELM_CHARTS_VERSION} --set imageTag=${ELASTIC_IMAGE_VERSION} --namespace ${NAMESPACE} --values "${GIT_TOPLEVEL}"/config/helm-charts/kibana.yaml --wait --timeout=900
 
 # Execute some PipelineRuns and TaskRuns
-TASKRUNS_EXAMPLES="taskruns/build-gcs-targz.yaml taskruns/gcs-resource.yaml taskruns/pullrequest.yaml taskruns/task-multiple-output-image.yaml taskruns/build-gcs-zip.yaml taskruns/git-resource.yaml taskruns/secret-env.yaml taskruns/task-output-image.yaml 
-                   taskruns/build-push-kaniko.yaml taskruns/git-ssh-creds.yaml taskruns/secret-volume-params.yaml taskruns/task-volume-args.yaml taskruns/git-volume.yaml taskruns/secret-volume.yaml taskruns/template-volume.yaml  taskruns/home-is-set.yaml 
-                   taskruns/sidecar-interp.yaml taskruns/unnamed-steps.yaml taskruns/configmap.yaml taskruns/home-volume.yaml taskruns/sidecar-ready.yaml taskruns/steps-run-in-order.yaml taskruns/workspace.yaml taskruns/docker-creds.yaml 
-                   taskruns/steptemplate-env-merge.yaml pipelineruns/output-pipelinerun.yaml pipelineruns/conditional-pipelinerun.yaml"
-TEKTON_EXAMPLES_URL="https://raw.githubusercontent.com/tektoncd/pipeline/v${TEKTON_PIPELINE_VERSION}/examples"
-
-for EXAMPLE in $TASKRUNS_EXAMPLES
-do
- kubectl create -f "${TEKTON_EXAMPLES_URL}/${EXAMPLE}" -n tutorials || true
-done
+run_tekton_examples "${TEKTON_PIPELINE_VERSION}" "tutorials"
 
 kubectl port-forward deployment/kibana-kibana 5601 -n ${NAMESPACE}
 open http://localhost:5601
