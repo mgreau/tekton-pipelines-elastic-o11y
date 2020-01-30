@@ -11,27 +11,29 @@ kubectl create namespace "${NAMESPACE}"
 kubectl create namespace tutorials
 kubectl apply -f "${GIT_TOPLEVEL}/config"
 
-
-HELM_CHARTS_VERSION="7.5.2"
-IMAGE_VERSION="7.5.2"
+TEKTON_PIPELINE_VERSION="0.10.1"
+ELASTIC_HELM_CHARTS_VERSION="7.5.2"
+ELASTIC_IMAGE_VERSION="7.5.2"
 
 # install Elastic Stack with Helm 2.16
 helm init || true
 helm repo update
-helm install --name elasticsearch elastic/elasticsearch --version ${HELM_CHARTS_VERSION} --set imageTag=${IMAGE_VERSION} --namespace ${NAMESPACE} --values "${GIT_TOPLEVEL}"/config/helm-charts/elasticsearch.yaml --wait --timeout=900
-helm install --name filebeat elastic/filebeat --version ${HELM_CHARTS_VERSION} --set imageTag=${IMAGE_VERSION} --namespace ${NAMESPACE} --values "${GIT_TOPLEVEL}"/config/helm-charts/filebeat.yaml
-helm install --name metricbeat elastic/metricbeat --version ${HELM_CHARTS_VERSION} --set imageTag="${IMAGE_VERSION}" --namespace ${NAMESPACE} --values "${GIT_TOPLEVEL}"/config/helm-charts/metricbeat.yaml
-helm install --name kibana elastic/kibana --version ${HELM_CHARTS_VERSION} --set imageTag=${IMAGE_VERSION} --namespace ${NAMESPACE} --values "${GIT_TOPLEVEL}"/config/helm-charts/kibana.yaml --wait --timeout=900
+helm install --name elasticsearch elastic/elasticsearch --version ${ELASTIC_HELM_CHARTS_VERSION} --set imageTag=${ELASTIC_IMAGE_VERSION} --namespace ${NAMESPACE} --values "${GIT_TOPLEVEL}"/config/helm-charts/elasticsearch.yaml --wait --timeout=900
+helm install --name filebeat elastic/filebeat --version ${ELASTIC_HELM_CHARTS_VERSION} --set imageTag=${ELASTIC_IMAGE_VERSION} --namespace ${NAMESPACE} --values "${GIT_TOPLEVEL}"/config/helm-charts/filebeat.yaml
+helm install --name metricbeat elastic/metricbeat --version ${ELASTIC_HELM_CHARTS_VERSION} --set imageTag="${ELASTIC_IMAGE_VERSION}" --namespace ${NAMESPACE} --values "${GIT_TOPLEVEL}"/config/helm-charts/metricbeat.yaml
+helm install --name kibana elastic/kibana --version ${ELASTIC_HELM_CHARTS_VERSION} --set imageTag=${ELASTIC_IMAGE_VERSION} --namespace ${NAMESPACE} --values "${GIT_TOPLEVEL}"/config/helm-charts/kibana.yaml --wait --timeout=900
 
-# Execute some TaskRuns
-TASKRUNS_EXAMPLES="build-gcs-targz.yaml gcs-resource.yaml pullrequest.yaml task-multiple-output-image.yaml build-gcs-zip.yaml git-resource.yaml secret-env.yaml task-output-image.yaml build-push-kaniko.yaml git-ssh-creds.yaml secret-volume-params.yaml task-volume-args.yaml cloud-event.yaml git-volume.yaml secret-volume.yaml template-volume.yaml clustertask.yaml home-is-set.yaml sidecar-interp.yaml unnamed-steps.yaml configmap.yaml home-volume.yaml sidecar-ready.yaml ps-run-in-order.yaml workspace.yaml docker-creds.yaml pull-private-image.yaml steptemplate-env-merge.yaml"
-TASKRUNS_EXAMPLES_URL="https://raw.githubusercontent.com/tektoncd/pipeline/v0.10.0/examples/taskruns/"
+# Execute some PipelineRuns and TaskRuns
+TASKRUNS_EXAMPLES="taskruns/build-gcs-targz.yaml taskruns/gcs-resource.yaml taskruns/pullrequest.yaml taskruns/task-multiple-output-image.yaml taskruns/build-gcs-zip.yaml taskruns/git-resource.yaml taskruns/secret-env.yaml taskruns/task-output-image.yaml 
+                   taskruns/build-push-kaniko.yaml taskruns/git-ssh-creds.yaml taskruns/secret-volume-params.yaml taskruns/task-volume-args.yaml taskruns/git-volume.yaml taskruns/secret-volume.yaml taskruns/template-volume.yaml  taskruns/home-is-set.yaml 
+                   taskruns/sidecar-interp.yaml taskruns/unnamed-steps.yaml taskruns/configmap.yaml taskruns/home-volume.yaml taskruns/sidecar-ready.yaml taskruns/steps-run-in-order.yaml taskruns/workspace.yaml taskruns/docker-creds.yaml 
+                   taskruns/steptemplate-env-merge.yaml pipelineruns/output-pipelinerun.yaml pipelineruns/conditional-pipelinerun.yaml"
+TEKTON_EXAMPLES_URL="https://raw.githubusercontent.com/tektoncd/pipeline/v${TEKTON_PIPELINE_VERSION}/examples"
 
-for TR in $TASKRUNS_EXAMPLES
+for EXAMPLE in $TASKRUNS_EXAMPLES
 do
- kubectl create -f "${TASKRUNS_EXAMPLES_URL}/${TR}" -n default || true
+ kubectl create -f "${TEKTON_EXAMPLES_URL}/${EXAMPLE}" -n tutorials || true
 done
-
 
 kubectl port-forward deployment/kibana-kibana 5601 -n ${NAMESPACE}
 open http://localhost:5601

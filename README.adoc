@@ -1,8 +1,22 @@
 = Tekton Pipelines and the Elastic Stack
 :imagesdir: ./images
 
-* Tekton **v0.10.0**
-* Elastic Stack **7.5.2** deployed using official https://github.com/elastic/helm-charts)[Elastic Helm Charts]
+In a few minutes, you will have the following components up and running in the `tekton-pipelines` of your Kubernetes cluster:
+
+* Tekton https://github.com/tektoncd/pipeline/releases/tag/v0.10.1[**v0.10.1**]
+* Kube Stats Metric v1.4.0
+* Elastic Stack **7.5.2**, Elasticsearch / Kibana / Beats (filebeat and metricbeat) deployed using the official https://github.com/elastic/helm-charts[Elastic Helm Charts]
+
+By default, some `TaskRuns` and `PipelineRuns` from the official Tekton repositories are executed in  the `tutorials` namespace to generate data.
+
+.TL;DR
+```bash
+# Insall all resources and run TaskRuns/PipelineRuns examples
+./scripts/set-up-env.sh
+
+# wait for Forwarding from [::1]:5601 -> 5601
+open http://localhost:5601/
+```
 
 == Prerequisites
 
@@ -68,7 +82,7 @@ kube-state-metrics-b8845b4d7-ch9v7   1/1       Running   0          4m
 metricbeat-zctb6                     1/1       Running   0          4m
 --
 
-Then you can access to the http://localhost:30601/app/infra#/home?_g=()&waffleOptions=(groupBy:!(),metric:(type:cpu),nodeType:pod)[Kibana Infrastructure app]:
+Then you can access to the http://localhost:5601/app/infra#/home?_g=()&waffleOptions=(groupBy:!(),metric:(type:cpu),nodeType:pod)[Kibana Infrastructure app]:
 
 image::kibana-infrastructure-app.png[width=90%]
 
@@ -149,5 +163,20 @@ tekton_taskruns_pod_latency{namespace="tutorials",pod="echo-hello-world-task-run
 # HELP tekton_work_queue_depth Depth of the work queue
 # TYPE tekton_work_queue_depth gauge
 tekton_work_queue_depth{reconciler="TaskRun"} 0
-````
+```
+
+## Utils
+
+Check the API Resources
+
+```
+kubectl api-resources | grep tekton.dev
+clustertasks                                   tekton.dev                     false        ClusterTask
+conditions                                     tekton.dev                     true         Condition
+pipelineresources                              tekton.dev                     true         PipelineResource
+pipelineruns                      pr,prs       tekton.dev                     true         PipelineRun
+pipelines                                      tekton.dev                     true         Pipeline
+taskruns                          tr,trs       tekton.dev                     true         TaskRun
+tasks                                          tekton.dev                     true         Task
+```
 
