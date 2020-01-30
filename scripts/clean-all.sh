@@ -5,7 +5,7 @@ set -e
 
 readonly GIT_TOPLEVEL=$(git rev-parse --show-toplevel 2> /dev/null)
 
-NAMESPACES="tutorials elastic-stack tekton-pipelines"
+NAMESPACES="tutorials tekton-pipelines"
 
 for NAMESPACE in $NAMESPACES
 do

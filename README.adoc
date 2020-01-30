@@ -4,6 +4,14 @@
 * Tekton **v0.10.0**
 * Elastic Stack **7.5.2** deployed using official https://github.com/elastic/helm-charts)[Elastic Helm Charts]
 
+== Prerequisites
+
+* Local Kubernetes environment (Docker for Desktop, Minikube...)  
+* Helm v2.16+ installed
+
+_NOTE: for now this tutorial is only tested on Docker Desktop for Mac_
+
+
 == See it in action:
 
 * link:./doc/tekton-kaniko-elastic-demo.mp4[]
@@ -11,19 +19,12 @@
 .tekton example with Kaniko (Dockerfile in git -> Docker image pushed to Dockerhub)
 image::kaniko-stream-logs.png[width=90%]
 
-== Prerequisite
-
-For now, these tutorials have only been tested on a laptop with Docker Desktop 2.0.0 with kubernetes enabled on Mac OS.
-
-image::docker-desktop-mac.png[width=50%]
-
 
 == Tekton Pipelines Tutorials
 
-The *link:./samples[`samples`]* folder contains several examples using *tekton Tasks and Pipelines*. +
-The Elastic components (Elasticsearch, Beats and Kibana) are deployed to the Kubernetes cluster to collect the logs and metrics
-from the pods deployed by tekton. +
-The tekton components deployed are the official ones. There is no need to update those components to monitor them using the Elastic Stack.
+The *link:./samples[`samples`]* folder contains several examples using *Tekton Tasks and Pipelines*. +
+The Elastic components (Elasticsearch, Beats and Kibana) are deployed to the Kubernetes cluster to collect the logs and metrics from the pods deployed by Tekton. +
+The Tekton components deployed are the official ones. There is no need to update those components to monitor them using the Elastic Stack.
 
 * link:./samples/README.adoc#hello-world[`samples/01-hello-world`] contains a *Task* and a *TaskRun* to print Hello World
 * link:./samples/README.adoc#kaniko-hello-world---dockerhub[`samples/02-kaniko-push-dockerhub`] contains a *Task* and a *TaskRun* to build and push a Docker image from a git repository using Kaniko 
@@ -44,10 +45,7 @@ Then wait until the pods are running before starting the tutorials
 
 [source,shell]
 --
-# Check Elastic pods
-$ kubectl get pods -w -n elastic-stack
-
-# Check tekton Build Pipeline pods
+# Check All Elastic and Tekton pods
 $ kubectl get pods -w -n tekton-pipelines
 NAME                                           READY   STATUS    RESTARTS   AGE
 tekton-pipelines-controller-77f74f5bcf-rbj8s   1/1     Running   0          1m
@@ -61,7 +59,7 @@ When the set-up is done, you should have a *Kibana pod up and running*:
 [source,shell]
 --
 # Check Elastic pods
-$ kubectl get pods -n elastic-stack
+$ kubectl get pods -n tekton-pipelines 
 NAME                                 READY     STATUS    RESTARTS   AGE
 elasticsearch-7bf6cd96cd-r6llt       1/1       Running   0          4m
 filebeat-5lrwg                       1/1       Running   0          4m
