@@ -23,3 +23,6 @@ volumeClaimTemplate:
       storage: 100M
 
 image: "docker.elastic.co/elasticsearch/elasticsearch"
+
+# DEV MODE: to make sure to have enough local resources
+replicas: 1
