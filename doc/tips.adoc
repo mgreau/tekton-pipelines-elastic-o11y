@@ -1,0 +1,27 @@
+
+## Convert ndjson Dashbaord to json
+
+```
+docker run -it -v $(pwd):/tmp -w /tmp --entrypoint=bash node
+root@aa87f3a0863b:/tmp# npm install -g ndjson-to-json
+/usr/local/bin/ndjson-to-json -> /usr/local/lib/node_modules/ndjson-to-json/index.js
++ ndjson-to-json@1.0.0
+added 1 package from 1 contributor in 0.737s
+root@aa87f3a0863b:/tmp# ndjson-to-json tekton-dashboard.ndjson > tekton.json
+``
+
+
+## Follow the TaskRuns runnings
+
+
+.by using tkn
+```
+watch -n 10 "tkn tr list | grep Running "
+```
+
+```
+watch -n 10 "tkn tr list | grep Running | wc -l"
+```
+
+.by using the Tekton Pipelines Controller Endpoint
+watch -n 10 "curl http://localhost:9090/metrics | grep tekton_running_taskruns_count"
