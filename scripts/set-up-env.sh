@@ -28,6 +28,9 @@ helm install --name kibana elastic/kibana --version ${ELASTIC_HELM_CHARTS_VERSIO
 # Execute some PipelineRuns and TaskRuns
 run_tekton_examples "${TEKTON_PIPELINE_VERSION}" "tutorials"
 
+# wait before running the next kubectl command otherwise it failed
+sleep 3
+
 kubectl port-forward deployment/kibana-kibana 5601 -n ${NAMESPACE}
 open http://localhost:5601
 

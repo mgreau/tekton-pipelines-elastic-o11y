@@ -94,7 +94,7 @@ envFrom: []
 # Root directory where metricbeat will write data to in order to persist registry data across pod restarts (file position and other metadata).
 hostPathRoot: /var/lib
 
-image: "mgreau/metricbeat-tekton-stats"
+image: "mgreau/metricbeat-tekton-stats-fixed2"
 imagePullPolicy: "IfNotPresent"
 imagePullSecrets: []
 
