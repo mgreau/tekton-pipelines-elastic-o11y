@@ -14,8 +14,8 @@ kubectl create namespace tutorials
 kubectl apply -f "${GIT_TOPLEVEL}/config"
 
 TEKTON_PIPELINE_VERSION="0.10.1"
-ELASTIC_HELM_CHARTS_VERSION="7.5.2"
-ELASTIC_IMAGE_VERSION="7.5.2"
+ELASTIC_HELM_CHARTS_VERSION="7.6.2"
+ELASTIC_IMAGE_VERSION="7.6.2"
 
 # install Elastic Stack with Helm 2.16
 helm init || true
@@ -28,7 +28,5 @@ helm install --name kibana elastic/kibana --version ${ELASTIC_HELM_CHARTS_VERSIO
 # Execute some PipelineRuns and TaskRuns
 run_tekton_examples "${TEKTON_PIPELINE_VERSION}" "tutorials"
 
-kubectl port-forward deployment/kibana-kibana 5601 -n ${NAMESPACE}
-open http://localhost:5601
-
-
+echo "Execute the following command to have access to Kibana at http://localhost:5601"
+echo "kubectl port-forward deployment/kibana-kibana 5601 -n ${NAMESPACE}"
