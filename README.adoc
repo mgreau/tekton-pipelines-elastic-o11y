@@ -5,7 +5,7 @@ In a few minutes, you will have the following components up and running in the `
 
 * Tekton https://github.com/tektoncd/pipeline/releases/tag/v0.10.1[**v0.10.1**]
 * Kube Stats Metric v1.4.0
-* Elastic Stack **7.5.2**, Elasticsearch / Kibana / Beats (filebeat and metricbeat) deployed using the official https://github.com/elastic/helm-charts[Elastic Helm Charts]
+* Elastic Stack **7.6.2**, Elasticsearch / Kibana / Beats (filebeat and metricbeat) deployed using the official https://github.com/elastic/helm-charts[Elastic Helm Charts]
 
 By default, some `TaskRuns` and `PipelineRuns` from the official Tekton repositories are executed in  the `tutorials` namespace to generate data.
 
