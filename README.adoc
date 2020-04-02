@@ -14,7 +14,8 @@ By default, some `TaskRuns` and `PipelineRuns` from the official Tekton reposito
 # Insall all resources and run TaskRuns/PipelineRuns examples
 ./scripts/set-up-env.sh
 
-# wait for Forwarding from [::1]:5601 -> 5601
+# Access to Kibana UI
+kubectl port-forward deployment/kibana-kibana 5601 -n tekton-pipelines
 open http://localhost:5601/
 ```
 
