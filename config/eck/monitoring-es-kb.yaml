@@ -3,8 +3,9 @@ apiVersion: elasticsearch.k8s.elastic.co/v1
 kind: Elasticsearch
 metadata:
   name: elasticsearch-monitoring
+  namespace: elastic-system
 spec:
-  version: 7.9.2
+  version: 7.10.0
   nodeSets:
   - name: default
     count: 1
@@ -15,8 +16,9 @@ apiVersion: kibana.k8s.elastic.co/v1
 kind: Kibana
 metadata:
   name: kibana-monitoring
+  namespace: elastic-system
 spec:
-  version: 7.9.2
+  version: 7.10.0
   count: 1
   elasticsearchRef:
     name: elasticsearch-monitoring

@@ -1,80 +1,150 @@
 = Tekton Pipelines and the Elastic Stack
 :imagesdir: ./images
 
-In a few minutes, you will have the following components up and running in the `tekton-pipelines` of your Kubernetes cluster:
+In a few minutes, you will have the following components up and running in your local Kubernetes cluster:
 
-* Tekton https://github.com/tektoncd/pipeline/releases/tag/v0.10.1[**v0.10.1**]
-* Kube Stats Metric v1.4.0
-* Elastic Stack **7.6.2**, Elasticsearch / Kibana / Beats (filebeat and metricbeat) deployed using the official https://github.com/elastic/helm-charts[Elastic Helm Charts]
+* Tekton https://github.com/tektoncd/pipeline/releases/tag/v0.18.1[**v0.18.1**] in the `tekton-pipelines` namespace
+* Elastic Stack **7.10.0**, Elasticsearch / Kibana / Beats (filebeat and metricbeat) deployed using https://github.com/elastic/cloud-on-k8s[Elastic Cloud on Kubernetes (ECK)] in the `elastic-system` namespace
 
-By default, some `TaskRuns` and `PipelineRuns` from the official Tekton repositories are executed in  the `tutorials` namespace to generate data.
-
-.TL;DR
-```bash
-# Insall all resources and run TaskRuns/PipelineRuns examples
-./scripts/set-up-env.sh
-
-# Access to Kibana UI
-kubectl port-forward deployment/kibana-kibana 5601 -n tekton-pipelines
-open http://localhost:5601/
-```
 
 == Prerequisites
 
 * Local Kubernetes environment (Docker for Desktop, Minikube...)  
-* Helm v2.16+ installed
 
 _NOTE: for now this tutorial is only tested on Docker Desktop for Mac_
 
 
-== See it in action:
+== Set up Tekton Pipelines and CLI
 
-* link:./doc/tekton-kaniko-elastic-demo.mp4[]
-
-.tekton example with Kaniko (Dockerfile in git -> Docker image pushed to Dockerhub)
-image::kaniko-stream-logs.png[width=90%]
-
-
-== Tekton Pipelines Tutorials
-
-The *link:./samples[`samples`]* folder contains several examples using *Tekton Tasks and Pipelines*. +
-The Elastic components (Elasticsearch, Beats and Kibana) are deployed to the Kubernetes cluster to collect the logs and metrics from the pods deployed by Tekton. +
-The Tekton components deployed are the official ones. There is no need to update those components to monitor them using the Elastic Stack.
-
-* link:./samples/README.adoc#hello-world[`samples/01-hello-world`] contains a *Task* and a *TaskRun* to print Hello World
-* link:./samples/README.adoc#kaniko-hello-world---dockerhub[`samples/02-kaniko-push-dockerhub`] contains a *Task* and a *TaskRun* to build and push a Docker image from a git repository using Kaniko 
-
-=== Set up
-
+.Install Tekton Pipelines CRD
 [source,shell]
 --
 # make sure you are using the right k8s context
 $ kubectl config current-context
 docker-for-desktop
 
-# install all the components
-$ ./scripts/set-up-env.sh init
---
+# install Tekton Pipelines
+$ kubectl apply -f https://storage.googleapis.com/tekton-releases/pipeline/previous/v0.18.1/release.yaml
 
-Then wait until the pods are running before starting the tutorials
-
-[source,shell]
---
-# Check All Elastic and Tekton pods
+# Wait until all Tekton pods are ready
 $ kubectl get pods -w -n tekton-pipelines
 NAME                                           READY   STATUS    RESTARTS   AGE
 tekton-pipelines-controller-77f74f5bcf-rbj8s   1/1     Running   0          1m
 tekton-pipelines-webhook-f76c97965-5xkxq       1/1     Running   0          1m
 --
 
-=== Get Access to Kibana
+.Install Tekton CLI
+
+Find the best way to install it based on your local system by loogin at the official documentation:
+
+.Homebrew example
+```bash
+brew install tektoncd-cli
+```
+
+.Check the versions
+```bash
+$ tkn version
+Client version: 0.14.0
+Pipeline version: v0.18.1
+
+```
+
+== Run your first Task
+
+.Install Tekton task from catalog
+```bash
+# Install git clone Task from Tekton 
+$ tkn hub get task git-clone --version 0.2 |  kubectl apply -f -
+task.tekton.dev/git-clone created
+```
+
+.Trigger Task and check logs
+```bash
+# Create a pv to share data between task
+$ cat <<EOF | kubectl apply -f -
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: go-es-source-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 500Mi
+EOF
+
+# Clone repo
+$ cat <<EOF | kubectl apply -f -
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  name: clone-my-code
+spec:
+  taskRef:
+    name: git-clone
+  workspaces:
+  - name: output
+    persistentVolumeClaim:
+      claimName: go-es-source-pvc
+  params:
+  - name: url
+    value: https://github.com/elastic/go-elasticsearch.git
+  - name: revision
+    value: v7.10.0
+EOF
+
+$ tkn tr logs clone-my-code -f
+[clone] + CHECKOUT_DIR=/workspace/output/
+[clone] + '[[' true '==' true ]]
+[clone] + cleandir
+[clone] + '[[' -d /workspace/output/ ]]
+[clone] + rm -rf '/workspace/output//*'
+[clone] + rm -rf /workspace/output//.git
+[clone] + rm -rf '/workspace/output//..?*'
+[clone] + test -z
+[clone] + test -z
+[clone] + test -z
+[clone] + /ko-app/git-init -url https://github.com/tektoncd/pipeline.git -revision master -refspec  -path /workspace/output/ '-sslVerify=true' '-submodules=true' -depth 1
+[clone] {"level":"info","ts":1607383543.1383886,"caller":"git/git.go:165","msg":"Successfully cloned https://github.com/tektoncd/pipeline.git @ 2ba62c8cfc98b74a6d02e692ce181add8b2184cd (grafted, HEAD, origin/master) in path /workspace/output/"}
+[clone] {"level":"info","ts":1607383543.1675713,"caller":"git/git.go:203","msg":"Successfully initialized and updated submodules in path /workspace/output/"}
+[clone] + cd /workspace/output/
+[clone] + git rev-parse HEAD
+[clone] + RESULT_SHA=2ba62c8cfc98b74a6d02e692ce181add8b2184cd
+[clone] + EXIT_CODE=0
+[clone] + '[' 0 '!=' 0 ]
+[clone] + echo -n 2ba62c8cfc98b74a6d02e692ce181add8b2184cd
+[clone] + echo -n https://github.com/tektoncd/pipeline.git
+
+$ tkn tr list
+NAME            STARTED          DURATION     STATUS
+clone-my-code   25 seconds ago   16 seconds   Succeeded
+
+```
+
+What about using Elastic Observalibily to access these logs and metrics?
+
+== Set up Elastic Stack with ECK
+
+.Install ECK
+```bash
+$ kubectl apply -f https://download.elastic.co/downloads/eck/1.3.0/all-in-one.yaml
+```
+
+.Install Elasticsearch, Kibana and Beats
+```bash
+$ kubectl apply -n elastic-system -f https://raw.githubusercontent.com/mgreau/tekton-pipelines-elastic-tutorials/master/config/eck/monitoring-es-kb.yaml
+
+$ kubectl apply -n elastic-system -f https://raw.githubusercontent.com/mgreau/tekton-pipelines-elastic-tutorials/master/config/eck/monitoring-filebeat-metricbeat.yaml
+```
 
 When the set-up is done, you should have a *Kibana pod up and running*:
 
 [source,shell]
 --
 # Check Elastic pods
-$ kubectl get pods -n tekton-pipelines 
+$ kubectl get pods -n elastic-system 
 NAME                                 READY     STATUS    RESTARTS   AGE
 elasticsearch-7bf6cd96cd-r6llt       1/1       Running   0          4m
 filebeat-5lrwg                       1/1       Running   0          4m
@@ -83,20 +153,54 @@ kube-state-metrics-b8845b4d7-ch9v7   1/1       Running   0          4m
 metricbeat-zctb6                     1/1       Running   0          4m
 --
 
-Then you can access to the http://localhost:5601/app/infra#/home?_g=()&waffleOptions=(groupBy:!(),metric:(type:cpu),nodeType:pod)[Kibana Infrastructure app]:
+Get `elastic` user password
+[source,shell]
+--
+echo $(kubectl get secret elasticsearch-monitoring-es-elastic-user -o=jsonpath='{.data.elastic}' | base64 --decode)
+kubectl port-forward svc/kibana-monitoring-kb-http 5601
+--
 
-image::kibana-infrastructure-app.png[width=90%]
+Access
+```
+open https://localhost:5601/app/observability/overview
+```
 
 
-Check the Tekton Pipeline Controller logs to make sure everything is OK
+== Monitor Build using Elastic Observablity
 
-image::kibana-k8s-logs.gif[width=90%]
 
-=== Ready to start!
+.Install Tekton task from catalog
+```bash
+# Install golang-build Task from catalog 
+$ tkn hub get task golang-build --version 0.1 |  kubectl apply -f -
+task.tekton.dev/golang-build created
 
-*CONGRATS* you are now ready to start the link:./samples/README.adoc[tutorials]!
+# Build project and monitor with Elastic
+$ cat <<EOF | kubectl apply -f -
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  name: build-my-es-code
+spec:
+  taskRef:
+    name: golang-build
+  workspaces:
+  - name: source
+    persistentVolumeClaim:
+      claimName: go-es-source-pvc
+  params:
+  - name: package
+    value: github.com/elastic/go-elasticsearch/...
+  - name: packages
+    value: github.com/elastic/go-elasticsearch/...
+EOF
+```
 
-=== Observability
+
+https://localhost:5601/app/metrics
+
+
+=== Tekton Metrics
 
 To check the Tekton metrics
 
