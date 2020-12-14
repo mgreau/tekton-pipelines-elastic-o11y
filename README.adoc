@@ -1,4 +1,4 @@
-= Tekton Pipelines and the Elastic Stack
+= Monitoring Tekton Tasks and Pipelines with Elastic Observability
 :imagesdir: ./images
 
 In a few minutes, you will have the following components up and running in the `tekton-pipelines` of your Kubernetes cluster:
