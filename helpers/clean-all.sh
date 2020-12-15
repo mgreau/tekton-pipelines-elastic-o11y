@@ -14,6 +14,8 @@ kubectl delete -f "https://storage.googleapis.com/tekton-releases/pipeline/previ
 
 kubectl delete -f https://download.elastic.co/downloads/eck/${ECK_VERSION}/all-in-one.yaml || true
 
+kubectl delete pvc go-source
+
 # cleanup Elastic and Tekton Pipeliens CRDs
 for NAMESPACE in $NAMESPACES
 do

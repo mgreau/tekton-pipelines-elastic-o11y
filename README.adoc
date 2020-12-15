@@ -9,7 +9,32 @@ In a few minutes, you will have the following components up and running in your 
 
 == Prerequisites
 
-* Kubernetes environment (Docker for Desktop, Minikube, GKE...)  
+* Kubernetes environment (Docker for Desktop, Minikube, GKE...) 
+
+== Helpers
+
+If you don't want to follow all the tutorial step by step, you can use the helpers scripts, *make sure to be connected to your dev environment*
+[source,shell]
+--
+# Install Tekton Pipelines / ECK / Elasticsearch / Kibana / Beats
+$ ./helpers/set-up-env.sh
+--
+
+To add some data by executing some Tasks and Pipelines, run the following:
+[source,shell]
+--
+# Install some Tekton Tasks and Pipelines official examples
+$ ./helpers/add-data.sh 0.18.1 default
+--
+
+The dashboard used in the demo is available at ./helpers/tekton-dashboard.ndjson
+
+Use the script below to clean up your environment
+[source,shell]
+--
+# Install some Tekton Tasks and Pipelines official examples
+$ ./helpers/clean-all.sh
+--
 
 == Set up Tekton Pipelines and CLI
 
@@ -238,7 +263,7 @@ taskrun.tekton.dev/clone-my-code created
 https://localhost:5601/app/metrics
 
 
-=== Tekton Metrics
+== Tekton Metrics
 
 Tekton Pipelines provides metrics out-of-the-box as explained on the doc at:
 
