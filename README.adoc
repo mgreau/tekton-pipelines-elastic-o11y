@@ -146,7 +146,7 @@ metricbeat-beat-metricbeat-fsz5p        1/1     Running   7          5m
 .Get the `elastic` user password needed to access the UI
 [source,shell]
 --
-echo $(kubectl get secret -n elastic-system elasticsearch-monitoring-es-elastic-user -o=jsonpath='{.data.elastic}' | base64 --decode)
+$ echo $(kubectl get secret -n elastic-system elasticsearch-monitoring-es-elastic-user -o=jsonpath='{.data.elastic}' | base64 --decode)
 XXXXXXXXXXXXXX
 --
 
