@@ -163,7 +163,7 @@ Then you can access the following URL and use the credentials from above:
 _Note: the intent of this tutorial is to provide a development environment. To install a valide certificate, please refer to the official Elastic documentation._
 
 
-== Monitor Build using Elastic Observablity
+== Monitor Build using Elastic Observability
 
 Everything is ready to monitor Tasks and Pipelines.
 
