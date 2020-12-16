@@ -82,15 +82,12 @@ Pipeline version: v0.18.1
 
 == Get your first Tekton Task running!
 
-.Install Tekton Task from the catalog
+.Install Tekton Task from the catalog and execute it
 ```bash
-# Install git clone Task from Tekton 
+# Install the git-clone Task from Tekton Catalog
 $ tkn hub get task git-clone --version 0.2 |  kubectl apply -f -
 task.tekton.dev/git-clone created
-```
-
-.Execute a Task and check logs
-```bash
+ 
 # Create a PVC to share data between tasks
 $ cat <<EOF | kubectl apply -f -
 apiVersion: v1
@@ -127,19 +124,41 @@ spec:
 EOF
 taskrun.tekton.dev/clone-my-code created
 ```
+Everything is in place to execute a Task through the deployment of a first TaskRun that is going to invoke the Task:
+```bash
+# Execute a Task to clone the project
+$ cat <<EOF | kubectl apply -f -
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  name: clone-my-code
+spec:
+  taskRef:
+    name: git-clone
+  workspaces:
+  - name: output
+    persistentVolumeClaim:
+      claimName: go-source
+  params:
+  - name: url
+    value: https://github.com/elastic/go-licenser.git
+  - name: revision
+    value: master
+EOF
+taskrun.tekton.dev/clone-my-code created
+```
 
 .Check the result and logs
 ```bash
-$ tkn tasktuns list
-NAME            STARTED          DURATION     STATUS
-clone-my-code   25 seconds ago   16 seconds   Succeeded
+$ tkn taskruns list
+NAME                                                  STARTED        DURATION     STATUS
+clone-my-code                                         1 minute ago   9 seconds    Succeeded
 
-$ tkn taskruns logs clone-my-code -f
+$ tkn taskruns logs clone-my-code
 ...
 [clone] + /ko-app/git-init -url https://github.com/elastic/go-licenser.git -revision v0.3.1 -refspec  -path /workspace/output/ '-sslVerify=true' '-submodules=true' -depth 1
 [clone] {"level":"info","ts":1607989263.4070501,"caller":"git/git.go:165","msg":"Successfully cloned https://github.com/elastic/go-licenser.git @ 857b4969bc2f753ffb9eb3a885d01a59a9f22cdb (grafted, HEAD) in path /workspace/output/"}
-[clone]
-...
+[clone] ...
 
 ```
 
@@ -153,12 +172,14 @@ Let's see how to use Elastic Observability to monitor any Tekton Tasks and Pipel
 $ kubectl apply -f https://download.elastic.co/downloads/eck/1.3.1/all-in-one.yaml
 --
 
-.Deploy Elasticsearch, Kibana and Beats
+.Install Elastic Observability
 [source,shell]
 --
+# Deploy Elasticsearch and Kibana
 $ kubectl apply -n elastic-system -f https://raw.githubusercontent.com/mgreau/tekton-pipelines-elastic-tutorials/master/config/eck/monitoring-es-kb.yaml
 
-$ kubectl apply -n elastic-system -f https://raw.githubusercontent.com/mgreau/tekton-pipelines-elastic-tutorials/master/config/eck/monitoring-filebeat-metricbeat.yaml
+# Deploy Metricbeat and Filebeat
+$ kubectl apply -n elastic-system -f https://raw.githubusercontent.com/mgreau/tekton-pipelines-elastic-tutorials/master/config/eck/monitoring-filebeat-metricbeat.yaml 
 --
 
 When the set-up is done, you should have a *all the Elastic components up and running in the elasic-system* namespace:
@@ -194,28 +215,21 @@ Then you can access the following URL and use the credentials from above:
 
 _Note: the intent of this tutorial is to provide a development environment. To install a valide certificate, please refer to the official Elastic documentation._
 
+image::elastic-o11-tekton-1.png[Tekton Dashboard]
 
-== Monitor Build using Elastic Observability
 
-Everything is ready to monitor Tasks and Pipelines.
+== Monitor Tasks and Pipelines with Elastic Observability
+
+Run the tests Task and check the logs via the Logs UI
 
 .Install Tekton Tasks from the Catalog to build and test a golang project
 [source,shell]
 --
-# Install golang build and test Tasks from the catalog
+# Install the generic golang-test Task from the catalog
 $ tkn hub get task golang-test --version 0.1 |  kubectl apply -f -
 task.tekton.dev/golang-test created
-
-$ tkn hub get task golang-build --version 0.1 |  kubectl apply -f -
-task.tekton.dev/golang-build created
---
-
-Then create the TaskRuns to execute the Tasks.
-
-.Run the Tests
-[source,shell]
---
-# Run the tests and see the output with Elastic Observability
+ 
+# Execute a Task to run the tests
 $ cat <<EOF | kubectl apply -f -
 apiVersion: tekton.dev/v1beta1
 kind: TaskRun
@@ -238,6 +252,10 @@ spec:
 EOF
 taskrun.tekton.dev/test-my-code created
 --
+
+Go back to the Metrics UI, there is now a Pod showing up named test-my-code in the default namespace. By clicking on this Pod, you can access the logs, you should see the following output:
+
+image::elastic-o11-tekton-2.png[Tekton Dashboard]
 
 .Build the project
 [source,shell]
@@ -266,97 +284,38 @@ EOF
 taskrun.tekton.dev/clone-my-code created
 --
 
+image::elastic-o11-tekton-3.png[Tekton Dashboard]
+image::elastic-o11-tekton-4.png[Tekton Dashboard]
 
-https://localhost:5601/app/metrics
 
+You can then filter the logs by the Task name, TaskRun name, and so on
 
-== Tekton Metrics
+image::elastic-o11-tekton-5.png[Tekton Dashboard]
 
-Tekton Pipelines provides metrics out-of-the-box as explained on the doc at:
+== Execute several Tasks and Pipelines and Monitor through a Tekton dashboard
 
-- https://github.com/tektoncd/pipeline/blob/v0.18.1/docs/metrics.md
+Tekton Pipelines expose some metrics by default in Prometheus format. The metricbeat configuration provided earlier in this post has been initialized with the Prometheus module to automatically gather all these data:
 
-.Configure access to the metrics
+.Metricbeat Prometheus module
+[source,yaml]
+--
+     - module: prometheus
+        period: 10s
+        hosts:
+        - http://tekton-pipelines-controller.tekton-pipelines:9090
+        metrics_path: /metrics
+--
+
+Therefore, your cluster is ready for having dashboards use these data. I have initialized one Tekton Dashboard that you can import using the Kibana Import feature. This dashboard is available at `./helpers/tekton-dashboard.ndjson`
+
+.Execute multiple Tasks and Pipelines
 [source,shell]
 --
-$ kubectl port-forward deployment/tekton-pipelines-controller 9090 --namespace tekton-pipelines
-Forwarding from 127.0.0.1:9090 -> 9090
-Forwarding from [::1]:9090 -> 9090
-Handling connection for 9090
-Handling connection for 9090
+# Run Tekton examples from the 0.18.1 git tag in the default namespace
+$ ./helpers/add-data.sh 0.18.1 default
 --
 
-.Output example
-[source,shell]
---
-curl http://localhost:9090/metrics
-# HELP tekton_reconcile_count Number of reconcile operations
-# TYPE tekton_reconcile_count counter
-tekton_reconcile_count{key="tutorials/echo-hello-world-task-run",reconciler="TaskRun",success="false"} 2
-tekton_reconcile_count{key="tutorials/echo-hello-world-task-run",reconciler="TaskRun",success="true"} 9
-# HELP tekton_reconcile_latency Latency of reconcile operations
-# TYPE tekton_reconcile_latency histogram
-tekton_reconcile_latency_bucket{key="tutorials/echo-hello-world-task-run",reconciler="TaskRun",success="false",le="10"} 0
-tekton_reconcile_latency_bucket{key="tutorials/echo-hello-world-task-run",reconciler="TaskRun",success="false",le="100"} 1
-tekton_reconcile_latency_bucket{key="tutorials/echo-hello-world-task-run",reconciler="TaskRun",success="false",le="1000"} 2
-tekton_reconcile_latency_bucket{key="tutorials/echo-hello-world-task-run",reconciler="TaskRun",success="false",le="10000"} 2
-tekton_reconcile_latency_bucket{key="tutorials/echo-hello-world-task-run",reconciler="TaskRun",success="false",le="30000"} 2
-tekton_reconcile_latency_bucket{key="tutorials/echo-hello-world-task-run",reconciler="TaskRun",success="false",le="60000"} 2
-tekton_reconcile_latency_bucket{key="tutorials/echo-hello-world-task-run",reconciler="TaskRun",success="false",le="+Inf"} 2
-tekton_reconcile_latency_sum{key="tutorials/echo-hello-world-task-run",reconciler="TaskRun",success="false"} 274
-tekton_reconcile_latency_count{key="tutorials/echo-hello-world-task-run",reconciler="TaskRun",success="false"} 2
-tekton_reconcile_latency_bucket{key="tutorials/echo-hello-world-task-run",reconciler="TaskRun",success="true",le="10"} 4
-tekton_reconcile_latency_bucket{key="tutorials/echo-hello-world-task-run",reconciler="TaskRun",success="true",le="100"} 9
-tekton_reconcile_latency_bucket{key="tutorials/echo-hello-world-task-run",reconciler="TaskRun",success="true",le="1000"} 9
-tekton_reconcile_latency_bucket{key="tutorials/echo-hello-world-task-run",reconciler="TaskRun",success="true",le="10000"} 9
-tekton_reconcile_latency_bucket{key="tutorials/echo-hello-world-task-run",reconciler="TaskRun",success="true",le="30000"} 9
-tekton_reconcile_latency_bucket{key="tutorials/echo-hello-world-task-run",reconciler="TaskRun",success="true",le="60000"} 9
-tekton_reconcile_latency_bucket{key="tutorials/echo-hello-world-task-run",reconciler="TaskRun",success="true",le="+Inf"} 9
-tekton_reconcile_latency_sum{key="tutorials/echo-hello-world-task-run",reconciler="TaskRun",success="true"} 187
-tekton_reconcile_latency_count{key="tutorials/echo-hello-world-task-run",reconciler="TaskRun",success="true"} 9
-# HELP tekton_running_taskruns_count Number of taskruns executing currently
-# TYPE tekton_running_taskruns_count gauge
-tekton_running_taskruns_count 0
-# HELP tekton_taskrun_count number of taskruns
-# TYPE tekton_taskrun_count counter
-tekton_taskrun_count{status="success"} 1
-# HELP tekton_taskrun_duration_seconds The taskrun's execution time in seconds
-# TYPE tekton_taskrun_duration_seconds histogram
-tekton_taskrun_duration_seconds_bucket{namespace="tutorials",status="success",task="echo-hello-world",taskrun="echo-hello-world-task-run",le="10"} 0
-tekton_taskrun_duration_seconds_bucket{namespace="tutorials",status="success",task="echo-hello-world",taskrun="echo-hello-world-task-run",le="30"} 1
-tekton_taskrun_duration_seconds_bucket{namespace="tutorials",status="success",task="echo-hello-world",taskrun="echo-hello-world-task-run",le="60"} 1
-tekton_taskrun_duration_seconds_bucket{namespace="tutorials",status="success",task="echo-hello-world",taskrun="echo-hello-world-task-run",le="300"} 1
-tekton_taskrun_duration_seconds_bucket{namespace="tutorials",status="success",task="echo-hello-world",taskrun="echo-hello-world-task-run",le="900"} 1
-tekton_taskrun_duration_seconds_bucket{namespace="tutorials",status="success",task="echo-hello-world",taskrun="echo-hello-world-task-run",le="1800"} 1
-tekton_taskrun_duration_seconds_bucket{namespace="tutorials",status="success",task="echo-hello-world",taskrun="echo-hello-world-task-run",le="3600"} 1
-tekton_taskrun_duration_seconds_bucket{namespace="tutorials",status="success",task="echo-hello-world",taskrun="echo-hello-world-task-run",le="5400"} 1
-tekton_taskrun_duration_seconds_bucket{namespace="tutorials",status="success",task="echo-hello-world",taskrun="echo-hello-world-task-run",le="10800"} 1
-tekton_taskrun_duration_seconds_bucket{namespace="tutorials",status="success",task="echo-hello-world",taskrun="echo-hello-world-task-run",le="21600"} 1
-tekton_taskrun_duration_seconds_bucket{namespace="tutorials",status="success",task="echo-hello-world",taskrun="echo-hello-world-task-run",le="43200"} 1
-tekton_taskrun_duration_seconds_bucket{namespace="tutorials",status="success",task="echo-hello-world",taskrun="echo-hello-world-task-run",le="86400"} 1
-tekton_taskrun_duration_seconds_bucket{namespace="tutorials",status="success",task="echo-hello-world",taskrun="echo-hello-world-task-run",le="+Inf"} 1
-tekton_taskrun_duration_seconds_sum{namespace="tutorials",status="success",task="echo-hello-world",taskrun="echo-hello-world-task-run"} 13
-tekton_taskrun_duration_seconds_count{namespace="tutorials",status="success",task="echo-hello-world",taskrun="echo-hello-world-task-run"} 1
-# HELP tekton_taskruns_pod_latency scheduling latency for the taskruns pods
-# TYPE tekton_taskruns_pod_latency gauge
-tekton_taskruns_pod_latency{namespace="tutorials",pod="echo-hello-world-task-run-pod-5xqd7",task="echo-hello-world",taskrun="echo-hello-world-task-run"} 0
-# HELP tekton_work_queue_depth Depth of the work queue
-# TYPE tekton_work_queue_depth gauge
-tekton_work_queue_depth{reconciler="TaskRun"} 0
-```
+Now, open the Tekton Dashboard and watch the number of tasks running grow. You can also see which Tasks take the most time to execute.
 
-## Utils
-
-Check the API Resources
-
-```
-kubectl api-resources | grep tekton.dev
-clustertasks                                   tekton.dev                     false        ClusterTask
-conditions                                     tekton.dev                     true         Condition
-pipelineresources                              tekton.dev                     true         PipelineResource
-pipelineruns                      pr,prs       tekton.dev                     true         PipelineRun
-pipelines                                      tekton.dev                     true         Pipeline
-taskruns                          tr,trs       tekton.dev                     true         TaskRun
-tasks                                          tekton.dev                     true         Task
---
-
+image::elastic-o11-tekton-6.png[Tekton Dashboard]
+image::elastic-o11-tekton-6bis.png[Tekton Dashboard]
