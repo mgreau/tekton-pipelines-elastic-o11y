@@ -1,10 +1,17 @@
 = Monitoring Tekton Tasks and Pipelines with Elastic Observability
-:imagesdir: ./images
+:imagesdir: ./assets
 
 In a few minutes, you will have the following components up and running in your local Kubernetes cluster:
 
 * Tekton https://github.com/tektoncd/pipeline/releases/tag/v0.18.1[**v0.18.1**] in the `tekton-pipelines` namespace
 * Elastic Stack **7.10.0**, Elasticsearch / Kibana / Beats (filebeat and metricbeat) deployed using https://github.com/elastic/cloud-on-k8s[Elastic Cloud on Kubernetes (ECK)] in the `elastic-system` namespace
+* Blog Post: https://discuss.elastic.co/t/dec-16th-2020-en-monitoring-tekton-tasks-and-pipelines-with-elastic-observability/257567
+
+image::elastic-o11-tekton-6.png[Tekton Dashboard]
+
+image::elastic-o11-tekton-5.png[Logs UI]
+
+
 
 
 == Prerequisites
