@@ -15,6 +15,7 @@ kubectl apply -f "https://storage.googleapis.com/tekton-releases/pipeline/previo
 
 # Install ECK
 kubectl apply -f https://download.elastic.co/downloads/eck/${ECK_VERSION}/all-in-one.yaml
+sleep 20s
 
 # Install Elasticsearch and Kibana
 kubectl apply -n "elastic-system" -f "${GIT_TOPLEVEL}/config/eck/monitoring-es-kb.yaml"
